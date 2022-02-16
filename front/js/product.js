@@ -22,44 +22,62 @@ const fetchItemData = async () => {
     .catch((error) => {
       alert(error);
     });
-  console.log(item);
 };
 fetchItemData();
 
-/** ajout de l'image dans le DOM */
-const itemImage = async () => {
+// /** ajout de l'image dans le DOM */
+// const itemImage = async () => {
+//   await fetchItemData();
+//   let image = document.createElement("img");
+//   image.setAttribute("src", item.imageUrl);
+//   image.setAttribute("alt", item.altTxt);
+//   itemImageContainer.appendChild(image);
+// };
+// itemImage();
+
+// /** ajout du nom dans le DOM */
+// const itemName = async () => {
+//   await fetchItemData();
+//   itemNameContainer.textContent = item.name;
+// };
+// itemName();
+
+// /** ajout du prix dans le DOM */
+// const itemPrice = async () => {
+//   await fetchItemData();
+//   itemPriceContainer.textContent = item.price;
+// };
+// itemPrice();
+
+// /** ajout de la description dans le DOM */
+// const itemDescription = async () => {
+//   await fetchItemData();
+//   itemDescriptionContainer.textContent = item.description;
+// };
+// itemDescription();
+
+// /** ajout des couleurs dans le DOM */
+// const itemColors = async () => {
+//   await fetchItemData();
+//   for (let color of item.colors) {
+//     let colorOption = document.createElement("option");
+//     colorOption.setAttribute = ("value", color);
+//     colorOption.textContent = color;
+//     itemColorsContainer.appendChild(colorOption);
+//   }
+// };
+// itemColors();
+
+/** ajout des données du produit dans le DOM (une seule fonction)*/
+const itemDataAdd = async () => {
   await fetchItemData();
   let image = document.createElement("img");
   image.setAttribute("src", item.imageUrl);
   image.setAttribute("alt", item.altTxt);
   itemImageContainer.appendChild(image);
-};
-itemImage();
-
-/** ajout du nom dans le DOM */
-const itemName = async () => {
-  await fetchItemData();
   itemNameContainer.textContent = item.name;
-};
-itemName();
-
-/** ajout du prix dans le DOM */
-const itemPrice = async () => {
-  await fetchItemData();
   itemPriceContainer.textContent = item.price;
-};
-itemPrice();
-
-/** ajout de la description dans le DOM */
-const itemDescription = async () => {
-  await fetchItemData();
   itemDescriptionContainer.textContent = item.description;
-};
-itemDescription();
-
-/** ajout des couleurs dans le DOM */
-const itemColors = async () => {
-  await fetchItemData();
   for (let color of item.colors) {
     let colorOption = document.createElement("option");
     colorOption.setAttribute = ("value", color);
@@ -67,4 +85,4 @@ const itemColors = async () => {
     itemColorsContainer.appendChild(colorOption);
   }
 };
-itemColors();
+itemDataAdd();
