@@ -1,7 +1,7 @@
 /** pointage de  la section où vont s'afficher les items */
 const itemsContainer = document.getElementById("items");
 
-/** variable qui va contenir le resultat du fetch */
+/** variable qui va contenir le resultat du fetch sous forme d'array*/
 let itemsData;
 
 /** fonction fetch pour aller chercher les données de l'API et les stocker dans la variable itemsData */
