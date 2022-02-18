@@ -72,3 +72,28 @@
 // createAllItems();
 
 /* *********************************** page product ***********************************************/
+
+/** ajout des données du produit dans le DOM (une seule fonction)*/
+// const itemDataAdd = async () => {
+//   await fetchItemData();
+//   let image = document.createElement("img");
+//   image.setAttribute("src", item.imageUrl);
+//   image.setAttribute("alt", item.altTxt);
+//   itemImageContainer.appendChild(image);
+//   itemNameContainer.textContent = item.name;
+//   itemPriceContainer.textContent = item.price;
+//   itemDescriptionContainer.textContent = item.description;
+
+//   for (let color of item.colors) {
+//     let colorOption = new Option(color, color);
+
+//     // let colorOption = document.createElement("option");
+//     // /* voir pourquoi le setAttribute ne fonctionne pas pour value de option */
+//     // colorOption.setAttribute = ("value", color);
+//     // /* ******************************************************************** */
+//     // colorOption.textContent = color;
+
+//     itemColorsContainer.appendChild(colorOption);
+//   }
+// };
+// itemDataAdd();

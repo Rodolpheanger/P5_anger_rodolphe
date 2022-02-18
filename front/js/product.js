@@ -1,112 +1,86 @@
-/** récupération de l'id produit dans l'URL */
-const url = new URL(window.location.href);
-const itemId = url.searchParams.get("id");
-
-/** Pointage des divers éléments du DOM à modifier */
-const itemImageContainer = document.querySelector(".item__img");
-const itemNameContainer = document.getElementById("title");
-const itemPriceContainer = document.getElementById("price");
-const itemDescriptionContainer = document.getElementById("description");
-const itemColorsContainer = document.getElementById("colors");
-
-/** Pointage de l'input quantité */
-const itemQuantityContainer = document.getElementById("quantity");
-
-/** Pointage du bouton "ajouter au panier" */
-const cartAddButton = document.getElementById("addToCart");
-
-/** variable qui va contenir le résultat de fetchItemData sous forme d'object */
-let item;
-
-/** variable du contenu du local storage si trouvé*/
-let localStorageData;
-
-/** objet qui va recevoir les données du choix utilisateur (id, couleur et quantité) pour envoi au local storage */
-let customerChoices;
-
 /** fonction fetch pour récupérer les données de l'item dans l'API via son id */
-const fetchItemData = async (itemId) => {
-  await fetch("http://localhost:3000/api/products/" + itemId)
-    .then((response) => response.json())
-    .then((data) => (item = data))
-    .catch((error) => {
-      alert(error);
-    });
-};
-fetchItemData(itemId);
+const fetchItemData = async () => {
+  try {
+    // récupération de l'id produit dans l'URL
+    const url = new URL(window.location.href);
+    const itemId = url.searchParams.get("id");
 
-const pageTitle = async () => {
-  await fetchItemData(itemId);
+    const response = await fetch(
+      "http://localhost:3000/api/products/" + itemId
+    );
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    alert(error);
+  }
+};
+
+/** Fonction d'affichage des divers éléments de la page */
+const productDisplay = async () => {
+  const item = await fetchItemData();
+  pageTitle(item);
+  itemImage(item);
+  itemName(item);
+  itemPrice(item);
+  itemDescription(item);
+  itemColors(item);
+};
+productDisplay();
+
+/**Ajoute le nom du produit dans la balise <title> de la page*/
+const pageTitle = (item) => {
   document.title = item.name;
 };
-pageTitle();
 
-/** ajout de l'image dans le DOM */
-const itemImage = async () => {
-  await fetchItemData(itemId);
+// /** ajout de l'image dans le DOM */
+const itemImage = (item) => {
   let image = document.createElement("img");
   image.setAttribute("src", item.imageUrl);
   image.setAttribute("alt", item.altTxt);
-  itemImageContainer.appendChild(image);
+  document.querySelector(".item__img").appendChild(image);
 };
-itemImage();
 
-/** ajout du nom dans le DOM */
-const itemName = async () => {
-  await fetchItemData(itemId);
-  itemNameContainer.textContent = item.name;
+// /** ajout du nom dans le DOM */
+const itemName = (item) => {
+  document.getElementById("title").textContent = item.name;
 };
-itemName();
 
 /** ajout du prix dans le DOM */
-const itemPrice = async () => {
-  await fetchItemData(itemId);
-  itemPriceContainer.textContent = item.price;
+const itemPrice = (item) => {
+  document.getElementById("price").textContent = item.price;
 };
-itemPrice();
 
-/** ajout de la description dans le DOM */
-const itemDescription = async () => {
-  await fetchItemData(itemId);
-  itemDescriptionContainer.textContent = item.description;
+// /** ajout de la description dans le DOM */
+const itemDescription = (item) => {
+  document.getElementById("description").textContent = item.description;
 };
-itemDescription();
 
 /** ajout des couleurs dans le DOM */
-const itemColors = async () => {
-  await fetchItemData(itemId);
+const itemColors = (item) => {
   for (let color of item.colors) {
     let colorOption = new Option(color, color);
-    itemColorsContainer.appendChild(colorOption);
+    document.getElementById("colors").appendChild(colorOption);
   }
 };
-itemColors();
-
-/** ajout des données du produit dans le DOM (une seule fonction)*/
-// const itemDataAdd = async () => {
-//   await fetchItemData();
-//   let image = document.createElement("img");
-//   image.setAttribute("src", item.imageUrl);
-//   image.setAttribute("alt", item.altTxt);
-//   itemImageContainer.appendChild(image);
-//   itemNameContainer.textContent = item.name;
-//   itemPriceContainer.textContent = item.price;
-//   itemDescriptionContainer.textContent = item.description;
-
-//   for (let color of item.colors) {
-//     let colorOption = new Option(color, color);
-
-//     // let colorOption = document.createElement("option");
-//     // /* voir pourquoi le setAttribute ne fonctionne pas pour value de option */
-//     // colorOption.setAttribute = ("value", color);
-//     // /* ******************************************************************** */
-//     // colorOption.textContent = color;
-
-//     itemColorsContainer.appendChild(colorOption);
-//   }
-// };
-// itemDataAdd();
-
+//
+//
+//
+//
+//
+//
+//
+//
+const url = new URL(window.location.href);
+const itemId = url.searchParams.get("id");
+const itemNameContainer = document.getElementById("title");
+const itemColorsContainer = document.getElementById("colors");
+const itemQuantityContainer = document.getElementById("quantity");
+let localStorage;
+let customerChoices;
+setTimeout(() => {
+  console.log(itemNameContainer.textContent);
+}, 2000);
+/** variable du contenu du local storage si trouvé*/
 /** Fonction pour importer le contenu du local storage en fonction de l'id et de la couleur choisie par l'utilisateur.
  * @return null si la clé "id-color" n'existe pas
  * @return l'objet {id, color, quantity} si existe déjà
@@ -150,7 +124,7 @@ const customerChoicesAdd = () => {
 const validation = () => {
   if (
     confirm(
-      `Vous venez d'ajouter ${itemQuantityContainer.value} "${item.name}" de couleur ${itemColorsContainer.value} à votre panier. \nCliquez sur OK pour y accéder maintenant \nou sur ANNULER pour continuer vos achats.`
+      `Vous venez d'ajouter ${itemQuantityContainer.value} "${itemNameContainer.textContent}" de couleur ${itemColorsContainer.value} à votre panier. \nCliquez sur OK pour y accéder  \nou sur ANNULER pour continuer vos achats.`
     )
   ) {
     window.location.href = "../html/cart.html";
@@ -162,11 +136,13 @@ const validation = () => {
 /** Vérification que la couleur et la quantité sont bien renseignées avant validation */
 const checkValidity = () => {
   if (itemColorsContainer.value == "") {
-    alert(`Veuillez séléctionner une couleur pour votre "${item.name}"`);
+    alert(
+      `Veuillez séléctionner une couleur pour votre "${itemNameContainer.textContent}"`
+    );
     return;
   } else if (itemQuantityContainer.value == 0) {
     alert(
-      `Veuillez indiquer le nombre de "${item.name}" que vous souhaitez ajouter au panier`
+      `Veuillez indiquer le nombre de "${itemNameContainer.textContent}" que vous souhaitez ajouter au panier`
     );
     return;
   } else {
@@ -176,6 +152,6 @@ const checkValidity = () => {
 };
 
 /** Execute la fonction customerchoicesAdd au click sur le bouton "ajouter au panier" */
-cartAddButton.addEventListener("click", () => {
+document.getElementById("addToCart").addEventListener("click", () => {
   checkValidity();
 });
