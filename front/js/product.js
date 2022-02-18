@@ -63,36 +63,40 @@ const itemColors = (item) => {
   }
 };
 //
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! Logique du panier à revoir !!!!!!!!!!!!!!!!!!!!!!!!!!
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 //
-//
-//
-//
-//
-//
-//
-const url = new URL(window.location.href);
-const itemId = url.searchParams.get("id");
-const itemNameContainer = document.getElementById("title");
-const itemColorsContainer = document.getElementById("colors");
-const itemQuantityContainer = document.getElementById("quantity");
-let localStorage;
+let localStorageData;
 let customerChoices;
-setTimeout(() => {
-  console.log(itemNameContainer.textContent);
-}, 2000);
+
+/** Execute les fonctions necessaires au click sur le bouton "ajouter au panier" */
+document.getElementById("addToCart").addEventListener("click", () => {
+  const url = new URL(window.location.href);
+  const itemId = url.searchParams.get("id");
+  const itemNameContainer = document.getElementById("title");
+  const itemColorsContainer = document.getElementById("colors");
+  const itemQuantityContainer = document.getElementById("quantity");
+  checkValidity(itemColorsContainer, itemNameContainer, itemQuantityContainer);
+  getLocalStorage(itemId, itemColorsContainer);
+  customerChoicesAdd(itemId, itemColorsContainer, itemQuantityContainer);
+  setLocalStorage(itemId, itemColorsContainer);
+  validation(itemQuantityContainer, itemNameContainer, itemColorsContainer);
+});
+
 /** variable du contenu du local storage si trouvé*/
 /** Fonction pour importer le contenu du local storage en fonction de l'id et de la couleur choisie par l'utilisateur.
  * @return null si la clé "id-color" n'existe pas
  * @return l'objet {id, color, quantity} si existe déjà
  */
-const getLocalStorage = () => {
+const getLocalStorage = (itemId, itemColorsContainer) => {
   localStorageData = JSON.parse(
     window.localStorage.getItem(itemId + "-" + itemColorsContainer.value)
   );
 };
 
 /** Fonction pour envoyer le contenu du choix utilisateur dans le local storage */
-const setLocalStorage = () => {
+const setLocalStorage = (itemId, itemColorsContainer) => {
   customerChoices = JSON.stringify(customerChoices);
   window.localStorage.setItem(
     itemId + "-" + itemColorsContainer.value,
@@ -105,8 +109,11 @@ const setLocalStorage = () => {
  *  - si oui: modifie la quantity dans l'objet
  * Envoi le tout dans le local storage
  */
-const customerChoicesAdd = () => {
-  getLocalStorage();
+const customerChoicesAdd = (
+  itemId,
+  itemColorsContainer,
+  itemQuantityContainer
+) => {
   if (localStorageData === null) {
     customerChoices = {
       id: itemId,
@@ -117,11 +124,14 @@ const customerChoicesAdd = () => {
     customerChoices = localStorageData;
     customerChoices.quantity = itemQuantityContainer.value;
   }
-  setLocalStorage();
 };
 
 /** Pop-up de confirmation du modèle, de la couleur et de la quantité du produit ajouté au panier + demande redirection vers acceuil ou panier */
-const validation = () => {
+const validation = (
+  itemQuantityContainer,
+  itemNameContainer,
+  itemColorsContainer
+) => {
   if (
     confirm(
       `Vous venez d'ajouter ${itemQuantityContainer.value} "${itemNameContainer.textContent}" de couleur ${itemColorsContainer.value} à votre panier. \nCliquez sur OK pour y accéder  \nou sur ANNULER pour continuer vos achats.`
@@ -134,7 +144,11 @@ const validation = () => {
 };
 
 /** Vérification que la couleur et la quantité sont bien renseignées avant validation */
-const checkValidity = () => {
+const checkValidity = (
+  itemColorsContainer,
+  itemNameContainer,
+  itemQuantityContainer
+) => {
   if (itemColorsContainer.value == "") {
     alert(
       `Veuillez séléctionner une couleur pour votre "${itemNameContainer.textContent}"`
@@ -145,13 +159,5 @@ const checkValidity = () => {
       `Veuillez indiquer le nombre de "${itemNameContainer.textContent}" que vous souhaitez ajouter au panier`
     );
     return;
-  } else {
-    customerChoicesAdd();
-    validation();
   }
 };
-
-/** Execute la fonction customerchoicesAdd au click sur le bouton "ajouter au panier" */
-document.getElementById("addToCart").addEventListener("click", () => {
-  checkValidity();
-});
