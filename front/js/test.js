@@ -48,4 +48,27 @@
 // };
 // createAllItems();
 
+/** fonction qui crée les cards et les affiche dans la section avec id items (methode innerHTML)*/
+// const createAllItems = async () => {
+//   await fetchItems();
+//   for (let item of itemsData) {
+//     itemsContainer.innerHTML += `
+//         <a href="./product.html?id=${item._id}">
+//            <article>
+//              <img
+//                src="${item.imageUrl}"
+//                alt="${item.altTxt}"
+//              />
+//              <h3 class="productName">${item.name}</h3>
+//              <p class="productDescription">
+//                ${item.description}
+//              </p>
+//            </article>
+//          </a>
+//        `;
+//     console.log(item);
+//   }
+// };
+// createAllItems();
+
 /* *********************************** page product ***********************************************/

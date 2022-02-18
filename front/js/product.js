@@ -1,6 +1,5 @@
 /** récupération de l'id produit dans l'URL */
-const string = window.location.href;
-const url = new URL(string);
+const url = new URL(window.location.href);
 const itemId = url.searchParams.get("id");
 
 /** Pointage des divers éléments du DOM à modifier */
@@ -26,7 +25,7 @@ let localStorageData;
 let customerChoices;
 
 /** fonction fetch pour récupérer les données de l'item dans l'API via son id */
-const fetchItemData = async () => {
+const fetchItemData = async (itemId) => {
   await fetch("http://localhost:3000/api/products/" + itemId)
     .then((response) => response.json())
     .then((data) => (item = data))
@@ -34,77 +33,79 @@ const fetchItemData = async () => {
       alert(error);
     });
 };
-fetchItemData();
+fetchItemData(itemId);
 
-/** ajout des données du produit dans le DOM (plusieurs fonctions)*/
+const pageTitle = async () => {
+  await fetchItemData(itemId);
+  document.title = item.name;
+};
+pageTitle();
 
-// /** ajout de l'image dans le DOM */
-// const itemImage = async () => {
+/** ajout de l'image dans le DOM */
+const itemImage = async () => {
+  await fetchItemData(itemId);
+  let image = document.createElement("img");
+  image.setAttribute("src", item.imageUrl);
+  image.setAttribute("alt", item.altTxt);
+  itemImageContainer.appendChild(image);
+};
+itemImage();
+
+/** ajout du nom dans le DOM */
+const itemName = async () => {
+  await fetchItemData(itemId);
+  itemNameContainer.textContent = item.name;
+};
+itemName();
+
+/** ajout du prix dans le DOM */
+const itemPrice = async () => {
+  await fetchItemData(itemId);
+  itemPriceContainer.textContent = item.price;
+};
+itemPrice();
+
+/** ajout de la description dans le DOM */
+const itemDescription = async () => {
+  await fetchItemData(itemId);
+  itemDescriptionContainer.textContent = item.description;
+};
+itemDescription();
+
+/** ajout des couleurs dans le DOM */
+const itemColors = async () => {
+  await fetchItemData(itemId);
+  for (let color of item.colors) {
+    let colorOption = new Option(color, color);
+    itemColorsContainer.appendChild(colorOption);
+  }
+};
+itemColors();
+
+/** ajout des données du produit dans le DOM (une seule fonction)*/
+// const itemDataAdd = async () => {
 //   await fetchItemData();
 //   let image = document.createElement("img");
 //   image.setAttribute("src", item.imageUrl);
 //   image.setAttribute("alt", item.altTxt);
 //   itemImageContainer.appendChild(image);
-// };
-// itemImage();
-
-// /** ajout du nom dans le DOM */
-// const itemName = async () => {
-//   await fetchItemData();
 //   itemNameContainer.textContent = item.name;
-// };
-// itemName();
-
-// /** ajout du prix dans le DOM */
-// const itemPrice = async () => {
-//   await fetchItemData();
 //   itemPriceContainer.textContent = item.price;
-// };
-// itemPrice();
-
-// /** ajout de la description dans le DOM */
-// const itemDescription = async () => {
-//   await fetchItemData();
 //   itemDescriptionContainer.textContent = item.description;
-// };
-// itemDescription();
 
-// /** ajout des couleurs dans le DOM */
-// const itemColors = async () => {
-//   await fetchItemData();
 //   for (let color of item.colors) {
-//     let colorOption = document.createElement("option");
-//     colorOption.setAttribute = ("value", color);
-//     colorOption.textContent = color;
+//     let colorOption = new Option(color, color);
+
+//     // let colorOption = document.createElement("option");
+//     // /* voir pourquoi le setAttribute ne fonctionne pas pour value de option */
+//     // colorOption.setAttribute = ("value", color);
+//     // /* ******************************************************************** */
+//     // colorOption.textContent = color;
+
 //     itemColorsContainer.appendChild(colorOption);
 //   }
 // };
-// itemColors();
-
-/** ajout des données du produit dans le DOM (une seule fonction)*/
-const itemDataAdd = async () => {
-  await fetchItemData();
-  let image = document.createElement("img");
-  image.setAttribute("src", item.imageUrl);
-  image.setAttribute("alt", item.altTxt);
-  itemImageContainer.appendChild(image);
-  itemNameContainer.textContent = item.name;
-  itemPriceContainer.textContent = item.price;
-  itemDescriptionContainer.textContent = item.description;
-
-  for (let color of item.colors) {
-    let colorOption = new Option(color, color);
-
-    // let colorOption = document.createElement("option");
-    // /* voir pourquoi le setAttribute ne fonctionne pas pour value de option */
-    // colorOption.setAttribute = ("value", color);
-    // /* ******************************************************************** */
-    // colorOption.textContent = color;
-
-    itemColorsContainer.appendChild(colorOption);
-  }
-};
-itemDataAdd();
+// itemDataAdd();
 
 /** Fonction pour importer le contenu du local storage en fonction de l'id et de la couleur choisie par l'utilisateur.
  * @return null si la clé "id-color" n'existe pas
