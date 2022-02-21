@@ -111,7 +111,7 @@ const setLocalStorage = () => {
 /** Fonction qui récupère les choix utilisateur, les compare avec le local storage pour le modifier si besoin */
 const addToCart = (itemId, itemColorsContainer, itemQuantityContainer) => {
   getLocalStorage(itemId, itemColorsContainer);
-  if (localStorageData == null) {
+  if (localStorageData === null) {
     localStorageData = [
       {
         id: itemId,
@@ -122,7 +122,7 @@ const addToCart = (itemId, itemColorsContainer, itemQuantityContainer) => {
     setLocalStorage();
   } else if (localStorageData != null) {
     for (let entry of localStorageData) {
-      if (entry.id == itemId && entry.color == itemColorsContainer.value) {
+      if (entry.id === itemId && entry.color === itemColorsContainer.value) {
         return (
           (entry.quantity = itemQuantityContainer.value), setLocalStorage()
         );
@@ -130,8 +130,8 @@ const addToCart = (itemId, itemColorsContainer, itemQuantityContainer) => {
     }
     for (let entry of localStorageData) {
       if (
-        (entry.id == itemId && entry.color != itemColorsContainer.value) ||
-        entry.id != itemId
+        (entry.id === itemId && entry.color !== itemColorsContainer.value) ||
+        entry.id !== itemId
       ) {
         return (
           localStorageData.push({
