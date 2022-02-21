@@ -1,15 +1,16 @@
+/** récupération de l'id produit dans l'URL */
+const getItemId = () => {
+  return (itemId = new URL(window.location.href).searchParams.get("id"));
+};
+
 /** fonction fetch pour récupérer les données de l'item dans l'API via son id */
 const fetchItemData = async () => {
   try {
-    // récupération de l'id produit dans l'URL
-    const url = new URL(window.location.href);
-    const itemId = url.searchParams.get("id");
-
+    getItemId();
     const response = await fetch(
       "http://localhost:3000/api/products/" + itemId
     );
-    const data = await response.json();
-    return data;
+    return (data = await response.json());
   } catch (error) {
     alert(error);
   }
@@ -67,21 +68,15 @@ const itemColors = (item) => {
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! Logique du panier à revoir !!!!!!!!!!!!!!!!!!!!!!!!!!
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 //
-let localStorageData;
 let customerChoices;
 
 /** Execute les fonctions necessaires au click sur le bouton "ajouter au panier" */
 document.getElementById("addToCart").addEventListener("click", () => {
-  const url = new URL(window.location.href);
-  const itemId = url.searchParams.get("id");
   const itemNameContainer = document.getElementById("title");
   const itemColorsContainer = document.getElementById("colors");
   const itemQuantityContainer = document.getElementById("quantity");
+  getItemId();
   checkValidity(itemColorsContainer, itemNameContainer, itemQuantityContainer);
-  getLocalStorage(itemId, itemColorsContainer);
-  customerChoicesAdd(itemId, itemColorsContainer, itemQuantityContainer);
-  setLocalStorage(itemId, itemColorsContainer);
-  validation(itemQuantityContainer, itemNameContainer, itemColorsContainer);
 });
 
 /** variable du contenu du local storage si trouvé*/
@@ -90,9 +85,9 @@ document.getElementById("addToCart").addEventListener("click", () => {
  * @return l'objet {id, color, quantity} si existe déjà
  */
 const getLocalStorage = (itemId, itemColorsContainer) => {
-  localStorageData = JSON.parse(
+  return (localStorageData = JSON.parse(
     window.localStorage.getItem(itemId + "-" + itemColorsContainer.value)
-  );
+  ));
 };
 
 /** Fonction pour envoyer le contenu du choix utilisateur dans le local storage */
@@ -126,6 +121,28 @@ const customerChoicesAdd = (
   }
 };
 
+/** Vérification que la couleur et la quantité sont bien renseignées avant validation */
+const checkValidity = (
+  itemColorsContainer,
+  itemNameContainer,
+  itemQuantityContainer
+) => {
+  if (itemColorsContainer.value == "") {
+    alert(
+      `Veuillez séléctionner une couleur pour votre "${itemNameContainer.textContent}"`
+    );
+  } else if (itemQuantityContainer.value == 0) {
+    alert(
+      `Veuillez indiquer le nombre de "${itemNameContainer.textContent}" que vous souhaitez ajouter au panier`
+    );
+  } else {
+    getLocalStorage(itemId, itemColorsContainer);
+    customerChoicesAdd(itemId, itemColorsContainer, itemQuantityContainer);
+    setLocalStorage(itemId, itemColorsContainer);
+    validation(itemQuantityContainer, itemNameContainer, itemColorsContainer);
+  }
+};
+
 /** Pop-up de confirmation du modèle, de la couleur et de la quantité du produit ajouté au panier + demande redirection vers acceuil ou panier */
 const validation = (
   itemQuantityContainer,
@@ -140,24 +157,5 @@ const validation = (
     window.location.href = "../html/cart.html";
   } else {
     window.location.href = "../html/index.html";
-  }
-};
-
-/** Vérification que la couleur et la quantité sont bien renseignées avant validation */
-const checkValidity = (
-  itemColorsContainer,
-  itemNameContainer,
-  itemQuantityContainer
-) => {
-  if (itemColorsContainer.value == "") {
-    alert(
-      `Veuillez séléctionner une couleur pour votre "${itemNameContainer.textContent}"`
-    );
-    return;
-  } else if (itemQuantityContainer.value == 0) {
-    alert(
-      `Veuillez indiquer le nombre de "${itemNameContainer.textContent}" que vous souhaitez ajouter au panier`
-    );
-    return;
   }
 };
