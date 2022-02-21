@@ -1,3 +1,5 @@
+// ---------------------------------------- Affichage du produit --------------------------------
+
 /** récupération de l'id produit dans l'URL */
 const getItemId = () => {
   return (itemId = new URL(window.location.href).searchParams.get("id"));
@@ -63,12 +65,8 @@ const itemColors = (item) => {
     document.getElementById("colors").appendChild(colorOption);
   }
 };
-//
-// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! Logique du panier à revoir !!!!!!!!!!!!!!!!!!!!!!!!!!
-// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-//
-let customerChoices;
+
+// ---------------------------- Ajout au panier --------------------------------------------
 
 /** Execute les fonctions necessaires au click sur le bouton "ajouter au panier" */
 document.getElementById("addToCart").addEventListener("click", () => {
@@ -78,48 +76,6 @@ document.getElementById("addToCart").addEventListener("click", () => {
   getItemId();
   checkValidity(itemColorsContainer, itemNameContainer, itemQuantityContainer);
 });
-
-/** variable du contenu du local storage si trouvé*/
-/** Fonction pour importer le contenu du local storage en fonction de l'id et de la couleur choisie par l'utilisateur.
- * @return null si la clé "id-color" n'existe pas
- * @return l'objet {id, color, quantity} si existe déjà
- */
-const getLocalStorage = (itemId, itemColorsContainer) => {
-  return (localStorageData = JSON.parse(
-    window.localStorage.getItem(itemId + "-" + itemColorsContainer.value)
-  ));
-};
-
-/** Fonction pour envoyer le contenu du choix utilisateur dans le local storage */
-const setLocalStorage = (itemId, itemColorsContainer) => {
-  customerChoices = JSON.stringify(customerChoices);
-  window.localStorage.setItem(
-    itemId + "-" + itemColorsContainer.value,
-    customerChoices
-  );
-};
-
-/** Fonction qui cherche si la paire id + color est déjà présente dans le local storage:
- *  - si non: crée la clé "id-color" et lui ajoute l'objet contenant les données choisies par l'utilisateur
- *  - si oui: modifie la quantity dans l'objet
- * Envoi le tout dans le local storage
- */
-const customerChoicesAdd = (
-  itemId,
-  itemColorsContainer,
-  itemQuantityContainer
-) => {
-  if (localStorageData === null) {
-    customerChoices = {
-      id: itemId,
-      color: itemColorsContainer.value,
-      quantity: itemQuantityContainer.value,
-    };
-  } else {
-    customerChoices = localStorageData;
-    customerChoices.quantity = itemQuantityContainer.value;
-  }
-};
 
 /** Vérification que la couleur et la quantité sont bien renseignées avant validation */
 const checkValidity = (
@@ -136,10 +92,57 @@ const checkValidity = (
       `Veuillez indiquer le nombre de "${itemNameContainer.textContent}" que vous souhaitez ajouter au panier`
     );
   } else {
-    getLocalStorage(itemId, itemColorsContainer);
-    customerChoicesAdd(itemId, itemColorsContainer, itemQuantityContainer);
-    setLocalStorage(itemId, itemColorsContainer);
+    addToCart(itemId, itemColorsContainer, itemQuantityContainer);
     validation(itemQuantityContainer, itemNameContainer, itemColorsContainer);
+  }
+};
+
+/** Fonction qui recupère le contenu du local storage */
+const getLocalStorage = () => {
+  return (localStorageData = JSON.parse(window.localStorage.getItem("cart")));
+};
+
+/** Fonction pour envoyer le contenu du choix utilisateur dans le local storage */
+const setLocalStorage = () => {
+  localStorageData = JSON.stringify(localStorageData);
+  window.localStorage.setItem("cart", localStorageData);
+};
+
+/** Fonction qui récupère les choix utilisateur, les compare avec le local storage pour le modifier si besoin */
+const addToCart = (itemId, itemColorsContainer, itemQuantityContainer) => {
+  getLocalStorage(itemId, itemColorsContainer);
+  if (localStorageData == null) {
+    localStorageData = [
+      {
+        id: itemId,
+        color: itemColorsContainer.value,
+        quantity: itemQuantityContainer.value,
+      },
+    ];
+    setLocalStorage();
+  } else if (localStorageData != null) {
+    for (let entry of localStorageData) {
+      if (entry.id == itemId && entry.color == itemColorsContainer.value) {
+        return (
+          (entry.quantity = itemQuantityContainer.value), setLocalStorage()
+        );
+      }
+    }
+    for (let entry of localStorageData) {
+      if (
+        (entry.id == itemId && entry.color != itemColorsContainer.value) ||
+        entry.id != itemId
+      ) {
+        return (
+          localStorageData.push({
+            id: itemId,
+            color: itemColorsContainer.value,
+            quantity: itemQuantityContainer.value,
+          }),
+          setLocalStorage()
+        );
+      }
+    }
   }
 };
 
