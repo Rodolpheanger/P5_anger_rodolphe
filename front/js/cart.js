@@ -21,18 +21,33 @@ const cartDisplay = async () => {
   for (let entry of localStorageData) {
     getItemId(entry.id);
     const itemData = await fetchItemData();
-    articleItem(itemId, entry.color);
-    itemImageContainer();
-    itemImage(itemData.imageUrl, itemData.altTxt);
-    itemContentContainer();
+    itemImageDisplay(itemData.imageUrl, itemData.altTxt);
+    itemNameDisplay(itemData.name);
+    itemColorDisplay(entry.color);
+    itemPriceDisplay(itemData.price);
+    itemQuantityPreTextDisplay();
+    itemContentSettingsDeleteButtonDisplay();
     console.log(entry.color);
     console.log(itemId);
     console.log(itemData);
+    itemQuantityInputDisplay(entry.quantity);
+    itemContentSettingsDeleteContainer();
+    itemContentSettingsQuantityContainer();
+    itemContentSettingsContainer();
+    itemContentDescriptionContainer();
+    itemContentContainer();
+    itemImageContainer();
+    articleItem(itemId, entry.color);
+    getCartItemsContainer();
   }
 };
 
 const getItemId = (entryId) => {
   return (itemId = entryId);
+};
+
+const getCartItemsContainer = () => {
+  return document.getElementById("cart__items").appendChild(article);
 };
 
 const articleItem = (itemId, itemColor) => {
@@ -41,7 +56,8 @@ const articleItem = (itemId, itemColor) => {
     article.classList.add("cart__item"),
     (article.dataset.id = `${itemId}`),
     (article.dataset.color = `${itemColor}`),
-    document.getElementById("cart__items").appendChild(article)
+    article.appendChild(divImage),
+    article.appendChild(divItemContentContainer)
   );
 };
 
@@ -49,16 +65,15 @@ const itemImageContainer = () => {
   return (
     (divImage = document.createElement("div")),
     divImage.classList.add("cart__item__img"),
-    document.querySelector(".cart__item").appendChild(divImage)
+    divImage.appendChild(cartItemImage)
   );
 };
 
-const itemImage = (itemImageUrl, itemAltTxt) => {
+const itemImageDisplay = (itemImageUrl, itemAltTxt) => {
   return (
-    (image = document.createElement("img")),
-    image.setAttribute("src", itemImageUrl),
-    image.setAttribute("alt", itemAltTxt),
-    document.querySelector(".cart__item__img").appendChild(image)
+    (cartItemImage = document.createElement("img")),
+    cartItemImage.setAttribute("src", itemImageUrl),
+    cartItemImage.setAttribute("alt", itemAltTxt)
   );
 };
 
@@ -66,7 +81,106 @@ const itemContentContainer = () => {
   return (
     (divItemContentContainer = document.createElement("div")),
     divItemContentContainer.classList.add("cart__item__content"),
-    document.getElementById("cart__items").appendChild(divItemContentContainer)
+    divItemContentContainer.appendChild(divItemContentDescriptionContainer),
+    divItemContentContainer.appendChild(divItemContentSettingsContainer)
+  );
+};
+
+const itemContentDescriptionContainer = () => {
+  return (
+    (divItemContentDescriptionContainer = document.createElement("div")),
+    divItemContentDescriptionContainer.classList.add(
+      "cart__item__content__description"
+    ),
+    divItemContentDescriptionContainer.appendChild(cartItemName),
+    divItemContentDescriptionContainer.appendChild(cartItemColor),
+    divItemContentDescriptionContainer.appendChild(cartItemPrice)
+  );
+};
+
+const itemNameDisplay = (itemDataName) => {
+  return (
+    (cartItemName = document.createElement("h2")),
+    (cartItemName.textContent = itemDataName)
+  );
+};
+
+const itemColorDisplay = (itemDataColor) => {
+  return (
+    (cartItemColor = document.createElement("p")),
+    (cartItemColor.textContent = itemDataColor)
+  );
+};
+
+const itemPriceDisplay = (itemDataPrice) => {
+  return (
+    (cartItemPrice = document.createElement("p")),
+    (cartItemPrice.textContent = itemDataPrice + " €")
+  );
+};
+
+const itemContentSettingsContainer = () => {
+  return (
+    (divItemContentSettingsContainer = document.createElement("div")),
+    divItemContentSettingsContainer.classList.add(
+      "cart__item__content__settings"
+    ),
+    divItemContentSettingsContainer.appendChild(
+      divItemContentSettingsQuantityContainer
+    ),
+    divItemContentSettingsContainer.appendChild(
+      divItemContentSettingsDeleteContainer
+    )
+  );
+};
+
+const itemContentSettingsQuantityContainer = () => {
+  return (
+    (divItemContentSettingsQuantityContainer = document.createElement("div")),
+    divItemContentSettingsQuantityContainer.classList.add(
+      "cart__item__content__settings__quantity"
+    ),
+    divItemContentSettingsQuantityContainer.appendChild(preTextItemQuantity),
+    divItemContentSettingsQuantityContainer.appendChild(itemQuantityInput)
+  );
+};
+
+const itemQuantityPreTextDisplay = () => {
+  return (
+    (preTextItemQuantity = document.createElement("p")),
+    (preTextItemQuantity.textContent = "Qté : ")
+  );
+};
+
+const itemQuantityInputDisplay = (itemDataQuantity) => {
+  return (
+    (itemQuantityInput = document.createElement("input")),
+    itemQuantityInput.classList.add("itemQuantity"),
+    itemQuantityInput.setAttribute("type", "number"),
+    itemQuantityInput.setAttribute("name", "itemQuantity"),
+    itemQuantityInput.setAttribute("min", "1"),
+    itemQuantityInput.setAttribute("max", "100"),
+    itemQuantityInput.setAttribute("value", itemDataQuantity)
+  );
+};
+
+const itemContentSettingsDeleteContainer = () => {
+  return (
+    (divItemContentSettingsDeleteContainer = document.createElement("div")),
+    divItemContentSettingsDeleteContainer.classList.add(
+      "cart__item__content__settings__delete"
+    ),
+    divItemContentSettingsDeleteContainer.appendChild(
+      itemContentSettingsDeleteButton
+    )
+  );
+};
+
+const itemContentSettingsDeleteButtonDisplay = () => {
+  return (
+    (itemContentSettingsDeleteButton = document.createElement("p")),
+    itemContentSettingsDeleteButton.classList.add("deleteItem"),
+    (itemContentSettingsDeleteButton.textContent = "Supprimer")
   );
 };
 cartDisplay();

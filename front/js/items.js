@@ -13,7 +13,7 @@ const itemsDisplay = async () => {
   const itemsData = await fetchItems();
   for (let item of itemsData) {
     itemImageDisplay(item.imageUrl, item.altTxt);
-    itemNameDisplay(item.nameOfItem);
+    itemNameDisplay(item.name);
     itemDescriptionDisplay(item.description);
     itemArticleDisplay();
     itemLinkDisplay(item._id);
