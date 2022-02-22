@@ -94,7 +94,7 @@ const checkValidity = (
     );
   } else if (itemQuantityContainer.value == 0) {
     alert(
-      `Veuillez indiquer le nombre de "${itemNameContainer.textContent}" ${itemColorsContainer} que vous souhaitez ajouter au panier`
+      `Veuillez indiquer le nombre de "${itemNameContainer.textContent}" que vous souhaitez ajouter au panier`
     );
   } else {
     addToCart(itemColorsContainer, itemQuantityContainer);

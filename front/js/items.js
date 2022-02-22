@@ -17,7 +17,7 @@ const itemsDisplay = async () => {
     itemDescriptionDisplay(item.description);
     itemArticleDisplay();
     itemLinkDisplay(item._id);
-    itemContainerDisplay();
+    itemContainerSelect();
   }
 };
 
@@ -68,7 +68,7 @@ const itemDescriptionDisplay = (itemDescription) => {
 };
 
 /** Création du container pour la carte d'un produit */
-const itemContainerDisplay = () => {
+const itemContainerSelect = () => {
   return document.getElementById("items").appendChild(link);
 };
 
