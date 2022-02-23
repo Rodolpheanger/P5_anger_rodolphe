@@ -18,6 +18,7 @@ const fetchItemData = async () => {
 /** Affichage des produits contenus dans le panier */
 const cartDisplay = async () => {
   getLocalStorage();
+  let itemQuantityArray = [];
   for (let entry of localStorageData) {
     getItemId(entry.id);
     const itemData = await fetchItemData();
@@ -26,18 +27,22 @@ const cartDisplay = async () => {
     itemColorDisplay(entry.color);
     itemPriceDisplay(itemData.price);
     itemQuantityPreTextDisplay();
+    itemQuantityInputDisplay(entry.quantity);
     itemContentSettingsDeleteButtonDisplay();
     console.log(entry.color);
     console.log(itemId);
     console.log(itemData);
-    itemQuantityInputDisplay(entry.quantity);
+    createItemQuantityArray(itemQuantityArray, entry.quantity);
+    calculateTotalItemsQuantity(itemQuantityArray);
+    console.log(sumItemsQuantity);
+    totalItemsQuantityDisplay(sumItemsQuantity);
     itemContentSettingsDeleteContainer();
     itemContentSettingsQuantityContainer();
     itemContentSettingsContainer();
     itemContentDescriptionContainer();
     itemContentContainer();
     itemImageContainer();
-    articleItem(itemId, entry.color);
+    itemContainer(itemId, entry.color);
     getCartItemsContainer();
   }
 };
@@ -50,7 +55,7 @@ const getCartItemsContainer = () => {
   return document.getElementById("cart__items").appendChild(article);
 };
 
-const articleItem = (itemId, itemColor) => {
+const itemContainer = (itemId, itemColor) => {
   return (
     (article = document.createElement("article")),
     article.classList.add("cart__item"),
@@ -182,5 +187,35 @@ const itemContentSettingsDeleteButtonDisplay = () => {
     itemContentSettingsDeleteButton.classList.add("deleteItem"),
     (itemContentSettingsDeleteButton.textContent = "Supprimer")
   );
+};
+
+const createItemQuantityArray = (itemQuantityArray, itemDataQuantity) => {
+  return (
+    (itemDataQuantityToNumber = Number.parseInt(itemDataQuantity)),
+    itemQuantityArray.push(itemDataQuantityToNumber),
+    console.log(itemQuantityArray)
+  );
+};
+
+const calculateTotalItemsQuantity = (itemQuantityArray) => {
+  return (
+    (sumItemsQuantity = 0),
+    (sumItemsQuantity = itemQuantityArray.reduce((a, b) => a + b))
+  );
+};
+
+const totalItemsQuantityDisplay = (sumItemsQuantity) => {
+  return (document.getElementById("totalQuantity").textContent =
+    sumItemsQuantity);
+};
+
+// const calculateTotalItemsPrice = (itemQuantity, itemPrice) => {
+//   return (
+
+//   )
+// };
+
+const totalItemsPriceDisplay = (sumItemsPrice) => {
+  return (document.getElementById("totalPrice").textContent = sumItemsPrice);
 };
 cartDisplay();
