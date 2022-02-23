@@ -1,9 +1,13 @@
-/** Récupération des données du local storage */
+//------------------------------------------------------------------------------------
+//                          Affichage du contenu du panier
+//------------------------------------------------------------------------------------
+
+/** Récupération des données du local storage. */
 const getLocalStorage = () => {
   return (localStorageData = JSON.parse(window.localStorage.getItem("cart")));
 };
 
-/** Récupérations des données */
+/** Récupérations des données de l'API par id. */
 const fetchItemData = async () => {
   try {
     const response = await fetch(
@@ -15,9 +19,10 @@ const fetchItemData = async () => {
   }
 };
 
-/** Affichage des produits contenus dans le panier */
+/** Affichage des items contenus dans le panier. */
 const cartDisplay = async () => {
   getLocalStorage();
+  //--------------- voir pour déclarer les tableaux dans leur fonction respéctive -------
   let itemQuantityArray = [];
   let itemsTotalPriceArray = [];
   for (let entry of localStorageData) {
@@ -48,14 +53,17 @@ const cartDisplay = async () => {
   }
 };
 
+/** Récupération de l'id de chaque item du panier. */
 const getItemId = (entryId) => {
   return (itemId = entryId);
 };
 
+/** Pointage de la section HTML qui contient tous les items et ajout à l'intérieur des articles HTML contenant les items du panier. */
 const getCartItemsContainer = () => {
   return document.getElementById("cart__items").appendChild(article);
 };
 
+/** Création de l'article HTML qui contient un item et ajout à l'intérieur de la div contenant l'image et de celle contenat les détails de l'item (nom, couleur, prix unitaire, quantité) et bouton "supprimer". */
 const itemContainer = (itemId, itemColor) => {
   return (
     (article = document.createElement("article")),
@@ -67,6 +75,7 @@ const itemContainer = (itemId, itemColor) => {
   );
 };
 
+/** Création de la div qui contient l'image de l'item et ajout de celle-ci à l'intérieur. */
 const itemImageContainer = () => {
   return (
     (divImage = document.createElement("div")),
@@ -75,6 +84,7 @@ const itemImageContainer = () => {
   );
 };
 
+/** Création et affichage de l'image de l'item. */
 const itemImageDisplay = (itemImageUrl, itemAltTxt) => {
   return (
     (cartItemImage = document.createElement("img")),
@@ -82,6 +92,8 @@ const itemImageDisplay = (itemImageUrl, itemAltTxt) => {
     cartItemImage.setAttribute("alt", itemAltTxt)
   );
 };
+
+/** Création de la div qui contient les 2 div qui contiennent les détails de l'item (nom, couleur, prix unitaire, quantité) et le bouton "supprimer" et ajout de celles-ci à l'intérieur.  */
 
 const itemContentContainer = () => {
   return (
@@ -92,6 +104,7 @@ const itemContentContainer = () => {
   );
 };
 
+/** Création de la div qui contient les détails non modifiables de l'item (nom, couleur, prix unitaire) et ajout de ceux-ci à l'intérieur. */
 const itemContentDescriptionContainer = () => {
   return (
     (divItemContentDescriptionContainer = document.createElement("div")),
@@ -104,6 +117,7 @@ const itemContentDescriptionContainer = () => {
   );
 };
 
+/** Création et affichage du nom de l'item */
 const itemNameDisplay = (itemDataName) => {
   return (
     (cartItemName = document.createElement("h2")),
@@ -111,6 +125,7 @@ const itemNameDisplay = (itemDataName) => {
   );
 };
 
+/** Création et affichage de la couleur de l'item */
 const itemColorDisplay = (itemDataColor) => {
   return (
     (cartItemColor = document.createElement("p")),
@@ -118,6 +133,7 @@ const itemColorDisplay = (itemDataColor) => {
   );
 };
 
+/** Création et affichage du prix de l'item */
 const itemPriceDisplay = (itemDataPrice) => {
   return (
     (cartItemPrice = document.createElement("p")),
@@ -125,6 +141,7 @@ const itemPriceDisplay = (itemDataPrice) => {
   );
 };
 
+/** Création de la div qui contient les 2 div qui contiennent la quantité de l'item  et le button "supprimer" et ajout de celles-ci à l'intérieur. */
 const itemContentSettingsContainer = () => {
   return (
     (divItemContentSettingsContainer = document.createElement("div")),
@@ -140,6 +157,7 @@ const itemContentSettingsContainer = () => {
   );
 };
 
+/** Création de la div qui contient le pré-texte et l'input de la quantité de l'item et ajout de ceux-ci à l'interieur. */
 const itemContentSettingsQuantityContainer = () => {
   return (
     (divItemContentSettingsQuantityContainer = document.createElement("div")),
@@ -151,6 +169,7 @@ const itemContentSettingsQuantityContainer = () => {
   );
 };
 
+/** Création et affichage du pré-texte pour la quantité de l'item. */
 const itemQuantityPreTextDisplay = () => {
   return (
     (preTextItemQuantity = document.createElement("p")),
@@ -158,6 +177,7 @@ const itemQuantityPreTextDisplay = () => {
   );
 };
 
+/** Création et affichage de l'input pour la quantité de l'item. */
 const itemQuantityInputDisplay = (itemDataQuantity) => {
   return (
     (itemQuantityInput = document.createElement("input")),
@@ -170,6 +190,7 @@ const itemQuantityInputDisplay = (itemDataQuantity) => {
   );
 };
 
+/** Création de la div qui contient le button "supprimer" et ajout de celui-ci à l'interieur. */
 const itemContentSettingsDeleteContainer = () => {
   return (
     (divItemContentSettingsDeleteContainer = document.createElement("div")),
@@ -182,6 +203,7 @@ const itemContentSettingsDeleteContainer = () => {
   );
 };
 
+/** Création et affichage du button "supprimer" */
 const itemContentSettingsDeleteButtonDisplay = () => {
   return (
     (itemContentSettingsDeleteButton = document.createElement("p")),
@@ -189,7 +211,8 @@ const itemContentSettingsDeleteButtonDisplay = () => {
     (itemContentSettingsDeleteButton.textContent = "Supprimer")
   );
 };
-
+//----------------- voir pour déclarer le tableau ici -------------------------------
+/** Push de la quantité définie pour chaque item du panier dans le tableau en la convertissant en "number". */
 const createItemQuantityArray = (itemQuantityArray, itemDataQuantity) => {
   return (
     (itemDataQuantityToNumber = Number.parseInt(itemDataQuantity)),
@@ -197,6 +220,7 @@ const createItemQuantityArray = (itemQuantityArray, itemDataQuantity) => {
   );
 };
 
+/** Calcul de la somme du tableau contenant les quantité d'item. */
 const calculateTotalItemsQuantity = (itemQuantityArray) => {
   return (
     (sumItemsQuantity = 0),
@@ -204,14 +228,19 @@ const calculateTotalItemsQuantity = (itemQuantityArray) => {
   );
 };
 
+/** Affichage du nombre total d'item du panier dans la span correspondante. */
 const totalItemsQuantityDisplay = (sumItemsQuantity) => {
   return (document.getElementById("totalQuantity").textContent =
     sumItemsQuantity);
 };
 
+/** Calcul du prix total par item du panier (quantité * prix unitaire). */
 const calculateTotalPriceByItem = (itemQuantity, itemPrice) => {
   return (totalPriceByItem = itemQuantity * itemPrice);
 };
+
+//----------------- voir pour déclarer le tableau ici -------------------------------
+/** Push du prix total pour chaque item du panier dans le tableau. */
 const createItemsTotalPriceArray = (
   itemsTotalPriceArray,
   totolaPriceByItem
@@ -219,6 +248,7 @@ const createItemsTotalPriceArray = (
   return itemsTotalPriceArray.push(totolaPriceByItem);
 };
 
+/** Calcul du montant total de tous les items du panier. */
 const calculateItemsTotalPrice = (itemsTotalPriceArray) => {
   return (
     (sumItemsPrice = 0),
@@ -226,8 +256,18 @@ const calculateItemsTotalPrice = (itemsTotalPriceArray) => {
   );
 };
 
+/** Affichage du montant total de tous les items du panier dans la span correspondante. */
 const totalItemsPriceDisplay = (sumItemsPrice) => {
   return (document.getElementById("totalPrice").textContent = sumItemsPrice);
 };
 
+//------------------------------------------------------------------------------------
+//                  Modification quantité + suppression article
+//------------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------------
+//                                  Formulaire
+//------------------------------------------------------------------------------------
+
+/** Lancement de l'affichage des items du panier. */
 cartDisplay();

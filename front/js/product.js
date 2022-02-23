@@ -1,6 +1,8 @@
-// ---------------------------------------- Affichage du produit --------------------------------
+//------------------------------------------------------------------------------------
+//                            Affichage du produit séléctionné
+//------------------------------------------------------------------------------------
 
-/** Récupération de l'id produit dans l'URL de la page. */
+/** Récupération de l'id du produit dans l'URL de la page. */
 const getItemId = () => {
   return new URL(window.location.href).searchParams.get("id");
 };
@@ -18,7 +20,7 @@ const fetchItemData = async () => {
   }
 };
 
-/** Affichage des divers éléments sur la page pour l'item en cours
+/** Affichage des divers éléments sur la page pour le produit séléctionné
  * Puis initialisation pour ajout au panier. */
 const productPageInit = async () => {
   const item = await fetchItemData();
@@ -67,9 +69,11 @@ const itemColors = (itemColors) => {
   }
 };
 
-// ---------------------------- Ajout au panier --------------------------------------------
+//------------------------------------------------------------------------------------
+//                                   Ajout au panier
+//------------------------------------------------------------------------------------
 
-/** Initialise l'addEventlistener + lance les fonctions necessaires au click sur le bouton "ajouter au panier". */
+/** Initialisation du listener et lancement des fonctions necessaires au click sur le bouton "ajouter au panier". */
 const addToCartInit = () => {
   document.getElementById("addToCart").addEventListener("click", () => {
     const itemNameContainer = document.getElementById("title");
@@ -83,7 +87,7 @@ const addToCartInit = () => {
   });
 };
 
-/** Vérification que la couleur et la quantité sont bien renseignées avant ajout au panier:
+/** Vérification de la séléction d'une couleur et d'une quantité par l'utilisateur avant ajout au panier:
  * - si non ok: renvoi un message d'alerte.
  * - si ok: lance l'ajout au panier et l'affichage du message de validation. */
 const checkValidity = (itemColor, itemName, itemQuantity) => {
@@ -99,9 +103,9 @@ const checkValidity = (itemColor, itemName, itemQuantity) => {
   }
 };
 
-/** Interogation du contenu du local storage.
- * Si première utilisation (localeStorageData === null) crée un tableau vide.
- * Sinon renvoi le contenu du locale storage sous forme de tableau contenant des objets. */
+/** Interrogation du contenu du local storage:
+ * - Si première utilisation (localeStorageData === null) crée un tableau vide.
+ * - Sinon renvoi le contenu du locale storage sous forme de tableau contenant des objets. */
 const getLocalStorage = () => {
   let localStorageData = JSON.parse(window.localStorage.getItem("cart"));
   if (localStorageData === null) {
@@ -110,7 +114,7 @@ const getLocalStorage = () => {
   return localStorageData;
 };
 
-/** Récupération de l'id du produit en cours et du local storage.
+/** Récupération de l'id du produit séléctionné et du local storage.
  * Création du "modèle" pour l'objet à envoyer dans le local storage.
  * Lancement de la fonction qui crée un nouvel objet ou en modifie un déjà existant. */
 const addToCart = (itemColor, itemQuantity) => {
@@ -125,8 +129,8 @@ const addToCart = (itemColor, itemQuantity) => {
 };
 
 /** Comparaison entre le contenu du local storage et les choix utilisateurs.
- * Si même id et même couleur existe: modification de la quantité de l'objet existant et envoi au local storage.
- * Sinon lancement de la fonction pour push un nouvel objet avec les choix utilisateur dans le tableau du local storage. */
+ * - Si même id et même couleur existe: modification de la quantité de l'objet existant et envoi au local storage.
+ * - Sinon lancement de la fonction pour push un nouvel objet avec les choix utilisateur dans le tableau du local storage. */
 const createOrModifyEntry = (localStorageData, itemId, newProduct) => {
   for (let entry of localStorageData) {
     if (entry.id === itemId && entry.color === newProduct.color) {
