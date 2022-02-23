@@ -1,4 +1,4 @@
-/** fonction fetch pour aller chercher les données de l'API */
+/** Récupération des données de l'API pour tous les produits. */
 const fetchItems = async () => {
   try {
     const response = await fetch("http://localhost:3000/api/products");
@@ -8,7 +8,7 @@ const fetchItems = async () => {
   }
 };
 
-/** Affichage de toutes les cartes produit */
+/** Affichage de toutes les cartes produit. */
 const itemsDisplay = async () => {
   const itemsData = await fetchItems();
   for (let item of itemsData) {
@@ -21,7 +21,7 @@ const itemsDisplay = async () => {
   }
 };
 
-/** Création du lien d'un produit vers sa page dédiée*/
+/** Création du lien d'un produit vers sa page dédiée. */
 const itemLinkDisplay = (itemId) => {
   return (
     (link = document.createElement("a")),
@@ -30,7 +30,7 @@ const itemLinkDisplay = (itemId) => {
   );
 };
 
-/** Création article qui contient l'image, le nom et la description d'un produit */
+/** Création de l'article qui contient l'image, le nom et la description d'un produit. */
 const itemArticleDisplay = () => {
   return (
     (article = document.createElement("article")),
@@ -40,7 +40,7 @@ const itemArticleDisplay = () => {
   );
 };
 
-/** Création de l'image d'un produit */
+/** Création de l'image d'un produit. */
 const itemImageDisplay = (itemImageUrl, itemAltTxt) => {
   return (
     (image = document.createElement("img")),
@@ -49,7 +49,7 @@ const itemImageDisplay = (itemImageUrl, itemAltTxt) => {
   );
 };
 
-/** Création du nom d'un produit */
+/** Création du nom d'un produit. */
 const itemNameDisplay = (itemName) => {
   return (
     (nameOfItem = document.createElement("h3")),
@@ -58,7 +58,7 @@ const itemNameDisplay = (itemName) => {
   );
 };
 
-/** Création de la description d'un produit */
+/** Création de la description d'un produit. */
 const itemDescriptionDisplay = (itemDescription) => {
   return (
     (description = document.createElement("p")),
@@ -67,10 +67,10 @@ const itemDescriptionDisplay = (itemDescription) => {
   );
 };
 
-/** Création du container pour la carte d'un produit */
+/** Création du container pour la carte d'un produit. */
 const itemContainerSelect = () => {
   return document.getElementById("items").appendChild(link);
 };
 
-/** Lancement de l'affichage des produits */
+/** Lancement de l'affichage des produits. */
 itemsDisplay();

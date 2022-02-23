@@ -1,11 +1,11 @@
 // ---------------------------------------- Affichage du produit --------------------------------
 
-/** récupération de l'id produit dans l'URL */
+/** Récupération de l'id produit dans l'URL de la page. */
 const getItemId = () => {
   return new URL(window.location.href).searchParams.get("id");
 };
 
-/** fonction fetch pour récupérer les données de l'item dans l'API via son id */
+/** Récupération des données de l'item en cours dans l'API via son id */
 const fetchItemData = async () => {
   try {
     const itemId = getItemId();
@@ -18,7 +18,8 @@ const fetchItemData = async () => {
   }
 };
 
-/** Fonction d'affichage des divers éléments de la page */
+/** Affichage des divers éléments sur la page pour l'item en cours
+ * Puis initialisation pour ajout au panier. */
 const productPageInit = async () => {
   const item = await fetchItemData();
   pageTitle(item.name);
@@ -30,12 +31,12 @@ const productPageInit = async () => {
   addToCartInit();
 };
 
-/**Ajoute le nom du produit dans la balise <title> de la page*/
+/** Ajoute le nom du produit dans la balise <title> de la page. */
 const pageTitle = (itemName) => {
   document.title = itemName;
 };
 
-// /** ajout de l'image dans le DOM */
+// /** ajout de l'image dans le DOM. */
 const itemImage = (itemUrl, itemAltTxt) => {
   let image = document.createElement("img");
   image.setAttribute("src", itemUrl);
@@ -43,22 +44,22 @@ const itemImage = (itemUrl, itemAltTxt) => {
   document.querySelector(".item__img").appendChild(image);
 };
 
-// /** ajout du nom dans le DOM */
+// /** ajout du nom dans le DOM. */
 const itemName = (itemName) => {
   document.getElementById("title").textContent = itemName;
 };
 
-/** ajout du prix dans le DOM */
+/** ajout du prix dans le DOM. */
 const itemPrice = (itemPrice) => {
   document.getElementById("price").textContent = itemPrice;
 };
 
-// /** ajout de la description dans le DOM */
+// /** ajout de la description dans le DOM. */
 const itemDescription = (itemDescription) => {
   document.getElementById("description").textContent = itemDescription;
 };
 
-/** ajout des couleurs dans le DOM */
+/** ajout des couleurs dans le DOM. */
 const itemColors = (itemColors) => {
   for (let color of itemColors) {
     let colorOption = new Option(color, color);
@@ -68,78 +69,66 @@ const itemColors = (itemColors) => {
 
 // ---------------------------- Ajout au panier --------------------------------------------
 
-/** Execute les fonctions necessaires au click sur le bouton "ajouter au panier" */
+/** Initialise l'addEventlistener + lance les fonctions necessaires au click sur le bouton "ajouter au panier". */
 const addToCartInit = () => {
   document.getElementById("addToCart").addEventListener("click", () => {
     const itemNameContainer = document.getElementById("title");
     const itemColorsContainer = document.getElementById("colors");
     const itemQuantityContainer = document.getElementById("quantity");
     checkValidity(
-      itemColorsContainer,
-      itemNameContainer,
-      itemQuantityContainer
+      itemColorsContainer.value,
+      itemNameContainer.textContent,
+      itemQuantityContainer.value
     );
   });
 };
 
-/** Vérification que la couleur et la quantité sont bien renseignées avant validation */
-const checkValidity = (
-  itemColorsContainer,
-  itemNameContainer,
-  itemQuantityContainer
-) => {
-  if (itemColorsContainer.value == "") {
+/** Vérification que la couleur et la quantité sont bien renseignées avant ajout au panier:
+ * - si non ok: renvoi un message d'alerte.
+ * - si ok: lance l'ajout au panier et l'affichage du message de validation. */
+const checkValidity = (itemColor, itemName, itemQuantity) => {
+  if (itemColor == "") {
+    alert(`Veuillez séléctionner une couleur pour votre "${itemName}"`);
+  } else if (itemQuantity == 0) {
     alert(
-      `Veuillez séléctionner une couleur pour votre "${itemNameContainer.textContent}"`
-    );
-  } else if (itemQuantityContainer.value == 0) {
-    alert(
-      `Veuillez indiquer le nombre de "${itemNameContainer.textContent}" que vous souhaitez ajouter au panier`
+      `Veuillez indiquer le nombre de "${itemName}" que vous souhaitez ajouter au panier`
     );
   } else {
-    addToCart(itemColorsContainer, itemQuantityContainer);
-    validation(itemQuantityContainer, itemNameContainer, itemColorsContainer);
+    addToCart(itemColor, itemQuantity);
+    validation(itemQuantity, itemName, itemColor);
   }
 };
 
-//*************************************************************************************************
-//*************************************************************************************************
-//******************** Voir pour que getLocalStorage renvoi un tableau ****************************
-//******************** et pour supprimer if (localStorageData === null)  **************************
-//******************* {localStorageData = [];******************************************************
-//*************************************************************************************************
-//*************************************************************************************************
-
-/** Fonction qui recupère le contenu du local storage */
+/** Interogation du contenu du local storage.
+ * Si première utilisation (localeStorageData === null) crée un tableau vide.
+ * Sinon renvoi le contenu du locale storage sous forme de tableau contenant des objets. */
 const getLocalStorage = () => {
-  return JSON.parse(window.localStorage.getItem("cart"));
-};
-
-/** Fonction pour envoyer le contenu du choix utilisateur dans le local storage */
-const setLocalStorage = (cartData) => {
-  const cartDataToStringnify = JSON.stringify(cartData);
-  window.localStorage.setItem("cart", cartDataToStringnify);
-};
-
-/** Fonction qui récupère les choix utilisateur, les compare avec le local storage pour le modifier si besoin */
-const addToCart = (itemColorsContainer, itemQuantityContainer) => {
-  const itemId = getItemId();
-  let localStorageData = getLocalStorage(itemId, itemColorsContainer);
-  const newProduct = {
-    id: itemId,
-    color: itemColorsContainer.value,
-    quantity: itemQuantityContainer.value,
-  };
+  let localStorageData = JSON.parse(window.localStorage.getItem("cart"));
   if (localStorageData === null) {
     localStorageData = [];
   }
+  return localStorageData;
+};
+
+/** Récupération de l'id du produit en cours et du local storage.
+ * Création du "modèle" pour l'objet à envoyer dans le local storage.
+ * Lancement de la fonction qui crée un nouvel objet ou en modifie un déjà existant. */
+const addToCart = (itemColor, itemQuantity) => {
+  const itemId = getItemId();
+  localStorageData = getLocalStorage(itemId, itemColor);
+  const newProduct = {
+    id: itemId,
+    color: itemColor,
+    quantity: itemQuantity,
+  };
   createOrModifyEntry(localStorageData, itemId, newProduct);
 };
 
-/** Fonction qui compare puis modifie ou ajoute une entrée dans le tableau du local storage */
+/** Comparaison entre le contenu du local storage et les choix utilisateurs.
+ * Si même id et même couleur existe: modification de la quantité de l'objet existant et envoi au local storage.
+ * Sinon lancement de la fonction pour push un nouvel objet avec les choix utilisateur dans le tableau du local storage. */
 const createOrModifyEntry = (localStorageData, itemId, newProduct) => {
   for (let entry of localStorageData) {
-    /** Si même id et même couleur existe: modification quantité */
     if (entry.id === itemId && entry.color === newProduct.color) {
       return (
         (entry.quantity = newProduct.quantity),
@@ -147,11 +136,10 @@ const createOrModifyEntry = (localStorageData, itemId, newProduct) => {
       );
     }
   }
-  /** Sinon push une nouvelle entrée */
   newEntryPush(localStorageData, newProduct);
 };
 
-/** Fonction pour push le choix de l'utilisateur dans le tableau du local storage */
+/** Push des choix de l'utilisateur dans le tableau et envoi dans le local storage. */
 const newEntryPush = (localStorageData, productToPush) => {
   localStorageData.push({
     id: productToPush.id,
@@ -161,15 +149,17 @@ const newEntryPush = (localStorageData, productToPush) => {
     setLocalStorage(localStorageData);
 };
 
-/** Pop-up de confirmation du modèle, de la couleur et de la quantité du produit ajouté au panier + demande redirection vers acceuil ou panier */
-const validation = (
-  itemQuantityContainer,
-  itemNameContainer,
-  itemColorsContainer
-) => {
+/** Envoi du contenu du tableau dans le local storage dans la clé "cart". */
+const setLocalStorage = (cartData) => {
+  const cartDataToStringnify = JSON.stringify(cartData);
+  window.localStorage.setItem("cart", cartDataToStringnify);
+};
+
+/** Pop-up de confirmation du modèle, de la couleur et de la quantité du produit ajouté au panier et demande si redirection vers acceuil ou panier */
+const validation = (itemQuantity, itemName, itemColor) => {
   if (
     confirm(
-      `Vous venez d'ajouter ${itemQuantityContainer.value} "${itemNameContainer.textContent}" de couleur ${itemColorsContainer.value} à votre panier. \nCliquez sur OK pour y accéder  \nou sur ANNULER pour continuer vos achats.`
+      `Vous venez d'ajouter ${itemQuantity} "${itemName}" de couleur ${itemColor} à votre panier. \nCliquez sur OK pour y accéder  \nou sur ANNULER pour continuer vos achats.`
     )
   ) {
     window.location.href = "../html/cart.html";
@@ -178,4 +168,5 @@ const validation = (
   }
 };
 
+/** Initialisation de la page */
 productPageInit();

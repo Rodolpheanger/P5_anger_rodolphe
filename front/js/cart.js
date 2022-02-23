@@ -229,4 +229,5 @@ const calculateItemsTotalPrice = (itemsTotalPriceArray) => {
 const totalItemsPriceDisplay = (sumItemsPrice) => {
   return (document.getElementById("totalPrice").textContent = sumItemsPrice);
 };
+
 cartDisplay();
