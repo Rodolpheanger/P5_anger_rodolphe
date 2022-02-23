@@ -19,6 +19,7 @@ const fetchItemData = async () => {
 const cartDisplay = async () => {
   getLocalStorage();
   let itemQuantityArray = [];
+  let itemsTotalPriceArray = [];
   for (let entry of localStorageData) {
     getItemId(entry.id);
     const itemData = await fetchItemData();
@@ -29,13 +30,13 @@ const cartDisplay = async () => {
     itemQuantityPreTextDisplay();
     itemQuantityInputDisplay(entry.quantity);
     itemContentSettingsDeleteButtonDisplay();
-    console.log(entry.color);
-    console.log(itemId);
-    console.log(itemData);
     createItemQuantityArray(itemQuantityArray, entry.quantity);
     calculateTotalItemsQuantity(itemQuantityArray);
-    console.log(sumItemsQuantity);
     totalItemsQuantityDisplay(sumItemsQuantity);
+    calculateTotalPriceByItem(entry.quantity, itemData.price);
+    createItemsTotalPriceArray(itemsTotalPriceArray, totalPriceByItem);
+    calculateItemsTotalPrice(itemsTotalPriceArray);
+    totalItemsPriceDisplay(sumItemsPrice);
     itemContentSettingsDeleteContainer();
     itemContentSettingsQuantityContainer();
     itemContentSettingsContainer();
@@ -192,8 +193,7 @@ const itemContentSettingsDeleteButtonDisplay = () => {
 const createItemQuantityArray = (itemQuantityArray, itemDataQuantity) => {
   return (
     (itemDataQuantityToNumber = Number.parseInt(itemDataQuantity)),
-    itemQuantityArray.push(itemDataQuantityToNumber),
-    console.log(itemQuantityArray)
+    itemQuantityArray.push(itemDataQuantityToNumber)
   );
 };
 
@@ -209,11 +209,22 @@ const totalItemsQuantityDisplay = (sumItemsQuantity) => {
     sumItemsQuantity);
 };
 
-// const calculateTotalItemsPrice = (itemQuantity, itemPrice) => {
-//   return (
+const calculateTotalPriceByItem = (itemQuantity, itemPrice) => {
+  return (totalPriceByItem = itemQuantity * itemPrice);
+};
+const createItemsTotalPriceArray = (
+  itemsTotalPriceArray,
+  totolaPriceByItem
+) => {
+  return itemsTotalPriceArray.push(totolaPriceByItem);
+};
 
-//   )
-// };
+const calculateItemsTotalPrice = (itemsTotalPriceArray) => {
+  return (
+    (sumItemsPrice = 0),
+    (sumItemsPrice = itemsTotalPriceArray.reduce((a, b) => a + b))
+  );
+};
 
 const totalItemsPriceDisplay = (sumItemsPrice) => {
   return (document.getElementById("totalPrice").textContent = sumItemsPrice);
