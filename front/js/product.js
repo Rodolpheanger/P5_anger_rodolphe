@@ -104,14 +104,11 @@ const checkValidity = (itemColor, itemName, itemQuantity) => {
 };
 
 /** Interrogation du contenu du local storage:
- * - Si première utilisation (localeStorageData === null) crée un tableau vide.
+ * - Si première utilisation (localeStorageData === null) crée un tableau vide (?? []).
  * - Sinon renvoi le contenu du locale storage sous forme de tableau contenant des objets. */
 const getLocalStorage = () => {
-  let localStorageData = JSON.parse(window.localStorage.getItem("cart"));
-  if (localStorageData === null) {
-    localStorageData = [];
-  }
-  return localStorageData;
+  return (localStorageData =
+    JSON.parse(window.localStorage.getItem("cart")) ?? []);
 };
 
 /** Récupération de l'id du produit séléctionné et du local storage.
