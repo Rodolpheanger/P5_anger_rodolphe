@@ -7,6 +7,12 @@ const getLocalStorage = () => {
   return (localStorageData = JSON.parse(window.localStorage.getItem("cart")));
 };
 
+/** Envoi du contenu du tableau dans le local storage dans la clé "cart". */
+const setLocalStorage = (cartData) => {
+  const cartDataToStringnify = JSON.stringify(cartData);
+  window.localStorage.setItem("cart", cartDataToStringnify);
+};
+
 /** Récupérations des données de l'API par id. */
 const fetchItemData = async () => {
   try {
@@ -288,28 +294,18 @@ const modifyItemQuantity = () => {
   });
 };
 
-const setLocalStorage = (cartData) => {
-  const cartDataToStringnify = JSON.stringify(cartData);
-  window.localStorage.setItem("cart", cartDataToStringnify);
-};
 //------------------------------------------------------------------------------------
 //                                Suppression article
 //------------------------------------------------------------------------------------
 const deleteItem = () => {
   let deleteItemButton = document.querySelectorAll(".deleteItem");
-  console.log(deleteItemButton);
   deleteItemButton.forEach((button) => {
     let itemArticle = button.closest("section > article");
     let itemId = itemArticle.dataset.id;
     let itemColor = itemArticle.dataset.color;
-    console.log(itemArticle);
-    console.log(itemId);
-    console.log(itemColor);
-    console.log(localStorageData);
     button.addEventListener("click", () => {
       for (let entry of localStorageData) {
         if (entry.id === itemId && entry.color === itemColor) {
-          console.log(localStorageData.indexOf(entry));
           if (
             confirm(
               `Vous allez supprimer cet article de votre panier. \nOK pour confirmer \nANNULER pour revenir au panier`
@@ -318,8 +314,6 @@ const deleteItem = () => {
             localStorageData.splice(localStorageData.indexOf(entry), 1),
               setLocalStorage(localStorageData),
               location.reload();
-          } else {
-            location.reload();
           }
         }
       }
