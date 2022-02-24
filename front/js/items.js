@@ -12,63 +12,58 @@ const fetchItems = async () => {
 const itemsDisplay = async () => {
   const itemsData = await fetchItems();
   for (let item of itemsData) {
-    itemImageDisplay(item.imageUrl, item.altTxt);
-    itemNameDisplay(item.name);
-    itemDescriptionDisplay(item.description);
-    itemArticleDisplay();
-    itemLinkDisplay(item._id);
-    itemContainerSelect();
+    const image = itemImageDisplay(item.imageUrl, item.altTxt);
+    const nameOfItem = itemNameDisplay(item.name);
+    const description = itemDescriptionDisplay(item.description);
+    const article = itemArticleDisplay(image, nameOfItem, description);
+    const link = itemLinkDisplay(item._id, article);
+    itemContainerSelect(link);
   }
 };
 
 /** Création du lien d'un produit vers sa page dédiée. */
-const itemLinkDisplay = (itemId) => {
-  return (
-    (link = document.createElement("a")),
-    link.setAttribute("href", "./product.html?id=" + itemId),
-    link.appendChild(article)
-  );
+const itemLinkDisplay = (itemId, article) => {
+  const link = document.createElement("a");
+  link.setAttribute("href", "./product.html?id=" + itemId);
+  link.appendChild(article);
+  return link;
 };
 
 /** Création de l'article qui contient l'image, le nom et la description d'un produit. */
-const itemArticleDisplay = () => {
-  return (
-    (article = document.createElement("article")),
-    article.appendChild(image),
-    article.appendChild(nameOfItem),
-    article.appendChild(description)
-  );
+const itemArticleDisplay = (image, nameOfItem, description) => {
+  const article = document.createElement("article");
+  article.appendChild(image);
+  article.appendChild(nameOfItem);
+  article.appendChild(description);
+  return article;
 };
 
 /** Création de l'image d'un produit. */
 const itemImageDisplay = (itemImageUrl, itemAltTxt) => {
-  return (
-    (image = document.createElement("img")),
-    image.setAttribute("src", itemImageUrl),
-    image.setAttribute("alt", itemAltTxt)
-  );
+  const image = document.createElement("img");
+  image.setAttribute("src", itemImageUrl);
+  image.setAttribute("alt", itemAltTxt);
+  return image;
 };
 
 /** Création du nom d'un produit. */
 const itemNameDisplay = (itemName) => {
-  return (
-    (nameOfItem = document.createElement("h3")),
-    nameOfItem.classList.add("productName"),
-    (nameOfItem.textContent = itemName)
-  );
+  const nameOfItem = document.createElement("h3");
+  nameOfItem.classList.add("productName");
+  nameOfItem.textContent = itemName;
+  return nameOfItem;
 };
 
 /** Création de la description d'un produit. */
 const itemDescriptionDisplay = (itemDescription) => {
-  return (
-    (description = document.createElement("p")),
-    description.classList.add("productDescription"),
-    (description.textContent = itemDescription)
-  );
+  const description = document.createElement("p");
+  description.classList.add("productDescription");
+  description.textContent = itemDescription;
+  return description;
 };
 
 /** Création du container pour la carte d'un produit. */
-const itemContainerSelect = () => {
+const itemContainerSelect = (link) => {
   return document.getElementById("items").appendChild(link);
 };
 
