@@ -22,6 +22,7 @@ const fetchItemData = async () => {
 /** Affichage des items contenus dans le panier. */
 const cartDisplay = async () => {
   getLocalStorage();
+
   //--------------- voir pour déclarer les tableaux dans leur fonction respéctive -------
   let itemQuantityArray = [];
   let itemsTotalPriceArray = [];
@@ -51,6 +52,8 @@ const cartDisplay = async () => {
     itemContainer(itemId, entry.color);
     getCartItemsContainer();
   }
+  modifyItemQuantity();
+  deleteItem();
 };
 
 /** Récupération de l'id de chaque item du panier. */
@@ -262,8 +265,67 @@ const totalItemsPriceDisplay = (sumItemsPrice) => {
 };
 
 //------------------------------------------------------------------------------------
-//                  Modification quantité + suppression article
+//                             Modification quantité
 //------------------------------------------------------------------------------------
+
+const modifyItemQuantity = () => {
+  let itemQuantityButton = document.querySelectorAll(".itemQuantity");
+  itemQuantityButton.forEach((button) => {
+    let itemArticle = button.closest("section > article");
+    let itemId = itemArticle.dataset.id;
+    let itemColor = itemArticle.dataset.color;
+    button.addEventListener("change", () => {
+      for (let entry of localStorageData) {
+        if (entry.id === itemId && entry.color === itemColor) {
+          return (
+            (entry.quantity = button.value),
+            setLocalStorage(localStorageData),
+            location.reload()
+          );
+        }
+      }
+    });
+  });
+};
+
+const setLocalStorage = (cartData) => {
+  const cartDataToStringnify = JSON.stringify(cartData);
+  window.localStorage.setItem("cart", cartDataToStringnify);
+};
+//------------------------------------------------------------------------------------
+//                                Suppression article
+//------------------------------------------------------------------------------------
+const deleteItem = () => {
+  let deleteItemButton = document.querySelectorAll(".deleteItem");
+  console.log(deleteItemButton);
+  deleteItemButton.forEach((button) => {
+    let itemArticle = button.closest("section > article");
+    let itemId = itemArticle.dataset.id;
+    let itemColor = itemArticle.dataset.color;
+    console.log(itemArticle);
+    console.log(itemId);
+    console.log(itemColor);
+    console.log(localStorageData);
+    button.addEventListener("click", () => {
+      for (let entry of localStorageData) {
+        if (entry.id === itemId && entry.color === itemColor) {
+          console.log(localStorageData.indexOf(entry));
+          if (
+            confirm(
+              `Vous allez supprimer cet article de votre panier. \nOK pour confirmer \nANNULER pour revenir au panier`
+            )
+          ) {
+            localStorageData.splice(localStorageData.indexOf(entry), 1),
+              setLocalStorage(localStorageData),
+              location.reload();
+          } else {
+            location.reload();
+          }
+        }
+      }
+    });
+  });
+};
 
 //------------------------------------------------------------------------------------
 //                                  Formulaire
