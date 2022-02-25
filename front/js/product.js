@@ -163,9 +163,9 @@ const validation = (itemQuantity, itemName, itemColor) => {
       `Vous venez d'ajouter ${itemQuantity} "${itemName}" de couleur ${itemColor} à votre panier. \nCliquez sur OK pour y accéder  \nou sur ANNULER pour continuer vos achats.`
     )
   ) {
-    window.location.href = "../html/cart.html";
+    location.href = "../html/cart.html";
   } else {
-    window.location.href = "../html/index.html";
+    location.href = "../html/index.html";
   }
 };
 

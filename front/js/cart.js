@@ -25,34 +25,31 @@ const fetchItemData = async (itemId) => {
   }
 };
 
-/** Affichage des items contenus dans le panier. */
-const cartDisplay = async () => {
+/** Affichage des items contenus dans le panier, de la quantité total et du prix total. */
+const cartDisplay = () => {
   getLocalStorage();
+  console.log(localStorageData);
+  if (localStorageData === null) {
+    alert(`Votre panier est vide, veuillez y ajouter des articles.`);
+    location.href = "../html/index.html";
+  } else {
+    itemsDisplay(localStorageData);
+    totalItemsQuantityDisplay(localStorageData);
+    // let itemsTotalPriceArray = [];
 
-  //--------------- voir pour déclarer les tableaux dans leur fonction respéctive -------
-  let itemQuantityArray = [];
-  let itemsTotalPriceArray = [];
-  for (let entry of localStorageData) {
-    const itemId = getItemId(entry.id);
-    const itemData = await fetchItemData(itemId);
-    itemsDisplay(entry, itemId, itemData);
-    createItemQuantityArray(itemQuantityArray, entry.quantity);
-    calculateTotalItemsQuantity(itemQuantityArray);
-    totalItemsQuantityDisplay(sumItemsQuantity);
-    calculateTotalPriceByItem(entry.quantity, itemData.price);
-    createItemsTotalPriceArray(itemsTotalPriceArray, totalPriceByItem);
-    calculateItemsTotalPrice(itemsTotalPriceArray);
-    totalItemsPriceDisplay(sumItemsPrice);
+    // calculateTotalPriceByItem(entry.quantity, itemData.price);
+    // createItemsTotalPriceArray(itemsTotalPriceArray, totalPriceByItem);
+    // calculateItemsTotalPrice(itemsTotalPriceArray);
+    // totalItemsPriceDisplay(sumItemsPrice);
+
+    // deleteItem();
   }
-  modifyItemQuantity();
-  deleteItem();
 };
 
 /** Récupération de l'id de chaque item du panier.
  * @param {string} entryId
  * @return {string}
  */
-
 const getItemId = (entryId) => {
   const itemId = entryId;
   return itemId;
@@ -99,7 +96,7 @@ const createItemImageContainer = (cartItemImage) => {
   return divImage;
 };
 
-/** Création et affichage de l'image de l'item.
+/** Création pour affichage de l'image de l'item.
  * @param {string} itemImageUrl
  * @param {string} itemAltTxt
  * @return {HTMLElement} img
@@ -148,7 +145,7 @@ const createItemContentDescriptionContainer = (
   return divItemContentDescriptionContainer;
 };
 
-/** Création et affichage du nom de l'item:
+/** Création pour affichage du nom de l'item:
  * @param {string} itemDataName
  * @return {HTMLElement} h2
  * @return {string} name of item
@@ -159,7 +156,7 @@ const itemNameDisplay = (itemDataName) => {
   return cartItemName;
 };
 
-/** Création et affichage de la couleur de l'item:
+/** Création pour affichage de la couleur de l'item:
  * @param {string} itemDataColor
  * @return {HTMLElement} p
  * @return {string} color of item
@@ -170,7 +167,7 @@ const itemColorDisplay = (itemDataColor) => {
   return cartItemColor;
 };
 
-/** Création et affichage du prix de l'item
+/** Création pour affichage du prix de l'item
  * @param {string} itemDataPrice
  * @return {HTMLElement} p
  * @return {string} price of item
@@ -222,7 +219,7 @@ const createItemContentSettingsQuantityContainer = (
   return divItemContentSettingsQuantityContainer;
 };
 
-/** Création et affichage du pré-texte pour la quantité de l'item.
+/** Création pour affichage du pré-texte pour la quantité de l'item.
  * @return {HTMLElement} p
  * @return {String} "Qté : "
  */
@@ -232,7 +229,7 @@ const itemQuantityPreTextDisplay = () => {
   return preTextItemQuantity;
 };
 
-/** Création et affichage de l'input pour la quantité de l'item.
+/** Création pour affichage de l'input pour la quantité de l'item.
  * @param {string} itemDataQuantity
  * @return {HTMLElement} input
  */
@@ -263,7 +260,7 @@ const createItemContentSettingsDeleteContainer = (
   return divItemContentSettingsDeleteContainer;
 };
 
-/** Création et affichage du button "supprimer" */
+/** Création pour affichage du button "supprimer" */
 const itemContentSettingsDeleteButtonDisplay = () => {
   const itemContentSettingsDeleteButton = document.createElement("p");
   itemContentSettingsDeleteButton.classList.add("deleteItem");
@@ -271,14 +268,14 @@ const itemContentSettingsDeleteButtonDisplay = () => {
   return itemContentSettingsDeleteButton;
 };
 
-/** Affichade des items du panier
+/** Création pour affichage des items du panier
  * @param {object} entry
  * @param {string} itemId
  * @param {string} itemData
  * @returns {HTMLElements}
  */
 
-const itemsDisplay = (entry, itemId, itemData) => {
+const itemDisplay = (entry, itemId, itemData) => {
   const itemQuantityPreText = itemQuantityPreTextDisplay();
   const itemQuantityInput = itemQuantityInputDisplay(entry.quantity);
   const itemContentSettingsDeleteButton =
@@ -318,28 +315,68 @@ const itemsDisplay = (entry, itemId, itemData) => {
   getCartItemsContainer(itemContainer);
 };
 
-//----------------- voir pour déclarer le tableau ici -------------------------------
-/** Push de la quantité définie pour chaque item du panier dans le tableau en la convertissant en "number". */
-const createItemQuantityArray = (itemQuantityArray, itemDataQuantity) => {
-  return (
-    (itemDataQuantityToNumber = Number.parseInt(itemDataQuantity)),
-    itemQuantityArray.push(itemDataQuantityToNumber)
-  );
+/** Lancement de l'affichage des items + initialisation modification quantité et suppression article
+ * @param {object} localStorageData
+ */
+const itemsDisplay = async (localStorageData) => {
+  for (let entry of localStorageData) {
+    const itemId = getItemId(entry.id);
+    const itemData = await fetchItemData(itemId);
+    itemDisplay(entry, itemId, itemData);
+  }
+  modifyItemQuantityInit();
 };
 
-/** Calcul de la somme du tableau contenant les quantité d'item. */
+//------------------------------------------------------------------------------------
+//                    Affichage quantité total d'article du panier
+//------------------------------------------------------------------------------------
+
+/** Création d'un tableau vide pour recevoir les quantité de chaque item du panier
+ * @return {array} empty
+ */
+const createEmptyItemQuantityArray = () => {
+  return (itemQuantityArray = []);
+};
+
+/** Push de la quantité définie pour chaque item du panier dans le tableau en la convertissant en "number".
+ * @param {string} itemQuantityArray
+ * @param {string} itemDataQuantity
+ * @return {array} contain all the items individual quantity
+ */
+const pushInItemQuantityArray = (itemQuantityArray, itemDataQuantity) => {
+  const itemDataQuantityToNumber = Number.parseInt(itemDataQuantity);
+  itemQuantityArray.push(itemDataQuantityToNumber);
+  return itemQuantityArray;
+};
+
+/** Calcul de la somme du tableau contenant les quantité d'item.
+ * @param {array} itemQuantityArray
+ * @return {number} sum of itemQuantityArray values
+ */
 const calculateTotalItemsQuantity = (itemQuantityArray) => {
-  return (
-    (sumItemsQuantity = 0),
-    (sumItemsQuantity = itemQuantityArray.reduce((a, b) => a + b))
-  );
+  let sumItemsQuantity = 0;
+  sumItemsQuantity = itemQuantityArray.reduce((a, b) => a + b);
+  document.getElementById("totalQuantity").textContent = sumItemsQuantity;
+  return sumItemsQuantity;
 };
 
-/** Affichage du nombre total d'item du panier dans la span correspondante. */
-const totalItemsQuantityDisplay = (sumItemsQuantity) => {
-  return (document.getElementById("totalQuantity").textContent =
-    sumItemsQuantity);
+/** Affichage du nombre total d'item du panier dans la span correspondante.
+ * @param {object} localStorageData
+ */
+const totalItemsQuantityDisplay = (localStorageData) => {
+  let emptyItemQuantityArray = createEmptyItemQuantityArray();
+  for (let entry of localStorageData) {
+    itemQuantityArray = pushInItemQuantityArray(
+      emptyItemQuantityArray,
+      entry.quantity
+    );
+  }
+  calculateTotalItemsQuantity(itemQuantityArray);
 };
+
+//------------------------------------------------------------------------------------
+//                    Affichage prix total des articles du panier
+//------------------------------------------------------------------------------------
 
 /** Calcul du prix total par item du panier (quantité * prix unitaire). */
 const calculateTotalPriceByItem = (itemQuantity, itemPrice) => {
@@ -369,10 +406,10 @@ const totalItemsPriceDisplay = (sumItemsPrice) => {
 };
 
 //------------------------------------------------------------------------------------
-//                             Modification quantité
+//                            Modification quantité d'un article
 //------------------------------------------------------------------------------------
 
-const modifyItemQuantity = () => {
+const modifyItemQuantityInit = () => {
   let itemQuantityButton = document.querySelectorAll(".itemQuantity");
   itemQuantityButton.forEach((button) => {
     let itemArticle = button.closest("section > article");
@@ -384,7 +421,8 @@ const modifyItemQuantity = () => {
           return (
             (entry.quantity = button.value),
             setLocalStorage(localStorageData),
-            location.reload()
+            totalItemsQuantityDisplay(localStorageData)
+            // totalItemsPriceDisplay(localStorageData)
           );
         }
       }
