@@ -26,15 +26,23 @@ const fetchItemData = async (itemId) => {
 };
 
 /** Affichage des items contenus dans le panier, de la quantité total et du prix total. */
-const cartDisplay = () => {
+const cartDisplay = async () => {
   getLocalStorage();
-  console.log(localStorageData);
   if (localStorageData === null) {
     alert(`Votre panier est vide, veuillez y ajouter des articles.`);
     location.href = "../html/index.html";
   } else {
-    itemsDisplay(localStorageData);
+    await itemsDisplay(localStorageData);
     totalItemsQuantityDisplay(localStorageData);
+    modifyItemQuantityInit();
+    totalItemsPriceDisplay();
+
+    let itemPriceContainer = document.querySelectorAll(
+      ".cart__item__content__description p:nth-child(3)"
+    );
+    itemPriceContainer.forEach((element) => {
+      console.log(element.textContent);
+    });
     // let itemsTotalPriceArray = [];
 
     // calculateTotalPriceByItem(entry.quantity, itemData.price);
@@ -324,18 +332,18 @@ const itemsDisplay = async (localStorageData) => {
     const itemData = await fetchItemData(itemId);
     itemDisplay(entry, itemId, itemData);
   }
-  modifyItemQuantityInit();
 };
 
 //------------------------------------------------------------------------------------
 //                    Affichage quantité total d'article du panier
 //------------------------------------------------------------------------------------
 
-/** Création d'un tableau vide pour recevoir les quantité de chaque item du panier
+/** Création d'un tableau vide pour recevoir la quantité de chaque item du panier
  * @return {array} empty
  */
 const createEmptyItemQuantityArray = () => {
-  return (itemQuantityArray = []);
+  const emptyItemQuantityArray = [];
+  return emptyItemQuantityArray;
 };
 
 /** Push de la quantité définie pour chaque item du panier dans le tableau en la convertissant en "number".
@@ -378,6 +386,14 @@ const totalItemsQuantityDisplay = (localStorageData) => {
 //                    Affichage prix total des articles du panier
 //------------------------------------------------------------------------------------
 
+/** Création d'un tableau vide pour recevoir le prix de chaque item du panier
+ * @return {array} empty
+ */
+const createEmptyItemPriceArray = () => {
+  const emptyItemPriceArray = [];
+  return emptyItemPriceArray;
+};
+
 /** Calcul du prix total par item du panier (quantité * prix unitaire). */
 const calculateTotalPriceByItem = (itemQuantity, itemPrice) => {
   return (totalPriceByItem = itemQuantity * itemPrice);
@@ -401,10 +417,10 @@ const calculateItemsTotalPrice = (itemsTotalPriceArray) => {
 };
 
 /** Affichage du montant total de tous les items du panier dans la span correspondante. */
-const totalItemsPriceDisplay = (sumItemsPrice) => {
+const totalPriceDisplay = (sumItemsPrice) => {
   return (document.getElementById("totalPrice").textContent = sumItemsPrice);
 };
-
+const totalItemsPriceDisplay = () => {};
 //------------------------------------------------------------------------------------
 //                            Modification quantité d'un article
 //------------------------------------------------------------------------------------
