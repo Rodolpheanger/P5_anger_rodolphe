@@ -4,7 +4,8 @@
 
 /** Récupération des données du local storage. */
 const getLocalStorage = () => {
-  return (localStorageData = JSON.parse(window.localStorage.getItem("cart")));
+  return (localStorageData =
+    JSON.parse(window.localStorage.getItem("cart")) ?? []);
 };
 
 /** Envoi du contenu du tableau dans le local storage dans la clé "cart". */
@@ -28,29 +29,15 @@ const fetchItemData = async (itemId) => {
 /** Affichage des items contenus dans le panier, de la quantité total et du prix total. */
 const cartDisplay = async () => {
   getLocalStorage();
-  if (localStorageData === null) {
+  if (localStorageData.length === 0) {
     alert(`Votre panier est vide, veuillez y ajouter des articles.`);
     location.href = "../html/index.html";
   } else {
     await itemsDisplay(localStorageData);
     totalItemsQuantityDisplay(localStorageData);
+    totalItemsPriceDisplay(localStorageData);
     modifyItemQuantityInit();
-    totalItemsPriceDisplay();
-
-    let itemPriceContainer = document.querySelectorAll(
-      ".cart__item__content__description p:nth-child(3)"
-    );
-    itemPriceContainer.forEach((element) => {
-      console.log(element.textContent);
-    });
-    // let itemsTotalPriceArray = [];
-
-    // calculateTotalPriceByItem(entry.quantity, itemData.price);
-    // createItemsTotalPriceArray(itemsTotalPriceArray, totalPriceByItem);
-    // calculateItemsTotalPrice(itemsTotalPriceArray);
-    // totalItemsPriceDisplay(sumItemsPrice);
-
-    // deleteItem();
+    deleteItem();
   }
 };
 
@@ -342,8 +329,8 @@ const itemsDisplay = async (localStorageData) => {
  * @return {array} empty
  */
 const createEmptyItemQuantityArray = () => {
-  const emptyItemQuantityArray = [];
-  return emptyItemQuantityArray;
+  const itemQuantityArray = [];
+  return itemQuantityArray;
 };
 
 /** Push de la quantité définie pour chaque item du panier dans le tableau en la convertissant en "number".
@@ -372,10 +359,10 @@ const calculateTotalItemsQuantity = (itemQuantityArray) => {
  * @param {object} localStorageData
  */
 const totalItemsQuantityDisplay = (localStorageData) => {
-  const emptyItemQuantityArray = createEmptyItemQuantityArray();
+  let itemQuantityArray = createEmptyItemQuantityArray();
   for (let entry of localStorageData) {
     itemQuantityArray = pushInEmptyItemQuantityArray(
-      emptyItemQuantityArray,
+      itemQuantityArray,
       entry.quantity
     );
   }
@@ -390,56 +377,88 @@ const totalItemsQuantityDisplay = (localStorageData) => {
  * @return {array} empty
  */
 const createEmptyItemPriceArray = () => {
-  const emptyItemPriceArray = [];
-  return emptyItemPriceArray;
+  const itemsTotalPriceArray = [];
+  return itemsTotalPriceArray;
 };
 
-/** Calcul du prix total par item du panier (quantité * prix unitaire). */
+/** Calcul du prix total par item du panier (quantité * prix unitaire).
+ * @param {string} itemQuantity
+ * @param {number} itemPrice
+ * @return {number} total price by item of the cart
+ */
 const calculateTotalPriceByItem = (itemQuantity, itemPrice) => {
-  return (totalPriceByItem = itemQuantity * itemPrice);
+  const totalPriceByItem = itemQuantity * itemPrice;
+  return totalPriceByItem;
 };
 
-//----------------- voir pour déclarer le tableau ici -------------------------------
-/** Push du prix total pour chaque item du panier dans le tableau. */
+/** Push du prix total pour chaque item du panier dans le tableau.
+ * @param {array} itemsTotalPriceArray
+ * @param {number} totalaPriceByItem
+ * @return {array} contain all the items total price
+ */
 const createItemsTotalPriceArray = (
   itemsTotalPriceArray,
-  totolaPriceByItem
+  totalaPriceByItem
 ) => {
-  return itemsTotalPriceArray.push(totolaPriceByItem);
+  itemsTotalPriceArray.push(totalaPriceByItem);
+  return itemsTotalPriceArray;
 };
 
-/** Calcul du montant total de tous les items du panier. */
+/** Calcul du montant total de tous les items du panier.
+ * @param {array} itemsTotalPriceArray
+ * @return {number} total of items cart price
+ */
 const calculateItemsTotalPrice = (itemsTotalPriceArray) => {
-  return (
-    (sumItemsPrice = 0),
-    (sumItemsPrice = itemsTotalPriceArray.reduce((a, b) => a + b))
-  );
+  let itemsTotalPrice = 0;
+  itemsTotalPrice = itemsTotalPriceArray.reduce((a, b) => a + b);
+  return itemsTotalPrice;
 };
 
-/** Affichage du montant total de tous les items du panier dans la span correspondante. */
-const totalPriceDisplay = (sumItemsPrice) => {
-  return (document.getElementById("totalPrice").textContent = sumItemsPrice);
+/** Affichage du montant total de tous les items du panier dans la span correspondante.
+ * @param {number} itemsTotalPrice
+ * @return {HTMLElement} total of items cart price
+ */
+const totalPriceDisplay = (itemsTotalPrice) => {
+  return (document.getElementById("totalPrice").textContent = itemsTotalPrice);
 };
-const totalItemsPriceDisplay = () => {};
+
+/**
+ * @param {object} localStorageData
+ * @return {HTMLElement} total of items cart price
+ */
+const totalItemsPriceDisplay = async (localStorageData) => {
+  let itemsTotalPriceArray = createEmptyItemPriceArray();
+  for (let entry of localStorageData) {
+    const itemId = getItemId(entry.id);
+    const itemData = await fetchItemData(itemId);
+    const totalPriceByItem = calculateTotalPriceByItem(
+      entry.quantity,
+      itemData.price
+    );
+    itemsTotalPriceArray = createItemsTotalPriceArray(
+      itemsTotalPriceArray,
+      totalPriceByItem
+    );
+  }
+  const itemsTotalPrice = calculateItemsTotalPrice(itemsTotalPriceArray);
+  totalPriceDisplay(itemsTotalPrice);
+};
 //------------------------------------------------------------------------------------
-//                            Modification quantité d'un article
+//                      Modification quantité d'un article
 //------------------------------------------------------------------------------------
 
 const modifyItemQuantityInit = () => {
-  let itemQuantityButton = document.querySelectorAll(".itemQuantity");
-  itemQuantityButton.forEach((button) => {
-    let itemArticle = button.closest("section > article");
-    let itemId = itemArticle.dataset.id;
-    let itemColor = itemArticle.dataset.color;
+  document.querySelectorAll(".itemQuantity").forEach((button) => {
+    const itemArticle = button.closest("section > article");
+    const itemId = itemArticle.dataset.id;
+    const itemColor = itemArticle.dataset.color;
     button.addEventListener("change", () => {
       for (let entry of localStorageData) {
         if (entry.id === itemId && entry.color === itemColor) {
-          return (
-            (entry.quantity = button.value),
-            setLocalStorage(localStorageData),
-            totalItemsQuantityDisplay(localStorageData)
-            // totalItemsPriceDisplay(localStorageData)
-          );
+          entry.quantity = button.value;
+          setLocalStorage(localStorageData);
+          totalItemsQuantityDisplay(localStorageData);
+          totalItemsPriceDisplay(localStorageData);
         }
       }
     });
@@ -447,14 +466,13 @@ const modifyItemQuantityInit = () => {
 };
 
 //------------------------------------------------------------------------------------
-//                                Suppression article
+//                           Suppression d'un article
 //------------------------------------------------------------------------------------
 const deleteItem = () => {
-  let deleteItemButton = document.querySelectorAll(".deleteItem");
-  deleteItemButton.forEach((button) => {
-    let itemArticle = button.closest("section > article");
-    let itemId = itemArticle.dataset.id;
-    let itemColor = itemArticle.dataset.color;
+  document.querySelectorAll(".deleteItem").forEach((button) => {
+    const itemArticle = button.closest("section > article");
+    const itemId = itemArticle.dataset.id;
+    const itemColor = itemArticle.dataset.color;
     button.addEventListener("click", () => {
       for (let entry of localStorageData) {
         if (entry.id === itemId && entry.color === itemColor) {
@@ -463,9 +481,9 @@ const deleteItem = () => {
               `Vous allez supprimer cet article de votre panier. \nOK pour confirmer \nANNULER pour revenir au panier`
             )
           ) {
-            localStorageData.splice(localStorageData.indexOf(entry), 1),
-              setLocalStorage(localStorageData),
-              location.reload();
+            localStorageData.splice(localStorageData.indexOf(entry), 1);
+            setLocalStorage(localStorageData);
+            location.reload();
           }
         }
       }
