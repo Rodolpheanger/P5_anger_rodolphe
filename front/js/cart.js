@@ -343,7 +343,7 @@ const createEmptyItemQuantityArray = () => {
  * @param {string} itemDataQuantity
  * @return {array} contain all the items individual quantity
  */
-const pushInItemQuantityArray = (itemQuantityArray, itemDataQuantity) => {
+const pushInEmptyItemQuantityArray = (itemQuantityArray, itemDataQuantity) => {
   const itemDataQuantityToNumber = Number.parseInt(itemDataQuantity);
   itemQuantityArray.push(itemDataQuantityToNumber);
   return itemQuantityArray;
@@ -364,9 +364,9 @@ const calculateTotalItemsQuantity = (itemQuantityArray) => {
  * @param {object} localStorageData
  */
 const totalItemsQuantityDisplay = (localStorageData) => {
-  let emptyItemQuantityArray = createEmptyItemQuantityArray();
+  const emptyItemQuantityArray = createEmptyItemQuantityArray();
   for (let entry of localStorageData) {
-    itemQuantityArray = pushInItemQuantityArray(
+    itemQuantityArray = pushInEmptyItemQuantityArray(
       emptyItemQuantityArray,
       entry.quantity
     );
