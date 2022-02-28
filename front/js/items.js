@@ -1,4 +1,6 @@
-/** Récupération des données de l'API pour tous les produits. */
+/** Récupération des données de l'API pour tous les produits.
+ * @return {array} local storage content
+ */
 const fetchItems = async () => {
   try {
     const response = await fetch("http://localhost:3000/api/products");
@@ -8,7 +10,9 @@ const fetchItems = async () => {
   }
 };
 
-/** Affichage de toutes les cartes produit. */
+/** Affichage de toutes les cartes produit.
+ * @return {HTMLElements} items card
+ */
 const itemsDisplay = async () => {
   const itemsData = await fetchItems();
   for (let item of itemsData) {
@@ -21,7 +25,11 @@ const itemsDisplay = async () => {
   }
 };
 
-/** Création du lien d'un produit vers sa page dédiée. */
+/** Création du lien d'un produit vers sa page dédiée.
+ * @param {string} itemId
+ * @param {HTMLElement} article
+ * @return {HTMLElement} a
+ */
 const itemLinkDisplay = (itemId, article) => {
   const link = document.createElement("a");
   link.setAttribute("href", "./product.html?id=" + itemId);
@@ -29,7 +37,12 @@ const itemLinkDisplay = (itemId, article) => {
   return link;
 };
 
-/** Création de l'article qui contient l'image, le nom et la description d'un produit. */
+/** Création de l'article qui contient l'image, le nom et la description d'un produit.
+ * @param {HTMLElement} image
+ * @param {HTMLElement} nameOfItem
+ * @param {HTMLElement} description
+ * @return {HTMLElement} article
+ */
 const itemArticleDisplay = (image, nameOfItem, description) => {
   const article = document.createElement("article");
   article.appendChild(image);
@@ -38,7 +51,11 @@ const itemArticleDisplay = (image, nameOfItem, description) => {
   return article;
 };
 
-/** Création de l'image d'un produit. */
+/** Création de l'image d'un produit.
+ * @param {string} itemImageUrl
+ * @param {string} itemAltTxt
+ * @return {HTMLElement} img
+ */
 const itemImageDisplay = (itemImageUrl, itemAltTxt) => {
   const image = document.createElement("img");
   image.setAttribute("src", itemImageUrl);
@@ -46,7 +63,10 @@ const itemImageDisplay = (itemImageUrl, itemAltTxt) => {
   return image;
 };
 
-/** Création du nom d'un produit. */
+/** Création du nom d'un produit.
+ * @param {string} itemName
+ * @return {HTMLElement} h3
+ */
 const itemNameDisplay = (itemName) => {
   const nameOfItem = document.createElement("h3");
   nameOfItem.classList.add("productName");
@@ -54,7 +74,10 @@ const itemNameDisplay = (itemName) => {
   return nameOfItem;
 };
 
-/** Création de la description d'un produit. */
+/** Création de la description d'un produit.
+ * @param {string} itemDescription
+ * @return {HTMLElement} p
+ */
 const itemDescriptionDisplay = (itemDescription) => {
   const description = document.createElement("p");
   description.classList.add("productDescription");
@@ -62,9 +85,13 @@ const itemDescriptionDisplay = (itemDescription) => {
   return description;
 };
 
-/** Création du container pour la carte d'un produit. */
+/** Création du container pour la carte d'un produit.
+ * @param {HTMLElement} link
+ * @return {HTMLElement} section
+ */
 const itemContainerSelect = (link) => {
-  return document.getElementById("items").appendChild(link);
+  const section = document.getElementById("items").appendChild(link);
+  return section;
 };
 
 /** Lancement de l'affichage des produits. */
