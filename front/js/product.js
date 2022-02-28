@@ -107,8 +107,9 @@ const checkValidity = (itemColor, itemName, itemQuantity) => {
  * - Si première utilisation (localeStorageData === null) crée un tableau vide (?? []).
  * - Sinon renvoi le contenu du locale storage sous forme de tableau contenant des objets. */
 const getLocalStorage = () => {
-  return (localStorageData =
-    JSON.parse(window.localStorage.getItem("cart")) ?? []);
+  const localStorageData =
+    JSON.parse(window.localStorage.getItem("cart")) ?? [];
+  return localStorageData;
 };
 
 /** Récupération de l'id du produit séléctionné et du local storage.
@@ -116,7 +117,7 @@ const getLocalStorage = () => {
  * Lancement de la fonction qui crée un nouvel objet ou en modifie un déjà existant. */
 const addToCart = (itemColor, itemQuantity) => {
   const itemId = getItemId();
-  localStorageData = getLocalStorage(itemId, itemColor);
+  const localStorageData = getLocalStorage(itemId, itemColor);
   const newProduct = {
     id: itemId,
     color: itemColor,

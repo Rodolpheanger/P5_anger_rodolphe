@@ -4,8 +4,9 @@
 
 /** Récupération des données du local storage. */
 const getLocalStorage = () => {
-  return (localStorageData =
-    JSON.parse(window.localStorage.getItem("cart")) ?? []);
+  const localStorageData =
+    JSON.parse(window.localStorage.getItem("cart")) ?? [];
+  return localStorageData;
 };
 
 /** Envoi du contenu du tableau dans le local storage dans la clé "cart". */
@@ -28,7 +29,7 @@ const fetchItemData = async (itemId) => {
 
 /** Affichage des items contenus dans le panier, de la quantité total et du prix total. */
 const cartDisplay = async () => {
-  getLocalStorage();
+  const localStorageData = getLocalStorage();
   if (localStorageData.length === 0) {
     alert(`Votre panier est vide, veuillez y ajouter des articles.`);
     location.href = "../html/index.html";
@@ -36,8 +37,8 @@ const cartDisplay = async () => {
     await itemsDisplay(localStorageData);
     totalItemsQuantityDisplay(localStorageData);
     totalItemsPriceDisplay(localStorageData);
-    modifyItemQuantityInit();
-    deleteItem();
+    modifyItemQuantityInit(localStorageData);
+    deleteItem(localStorageData);
   }
 };
 
@@ -328,10 +329,6 @@ const itemsDisplay = async (localStorageData) => {
 /** Création d'un tableau vide pour recevoir la quantité de chaque item du panier
  * @return {array} empty
  */
-const createEmptyItemQuantityArray = () => {
-  const itemQuantityArray = [];
-  return itemQuantityArray;
-};
 
 /** Push de la quantité définie pour chaque item du panier dans le tableau en la convertissant en "number".
  * @param {string} itemQuantityArray
@@ -359,7 +356,7 @@ const calculateTotalItemsQuantity = (itemQuantityArray) => {
  * @param {object} localStorageData
  */
 const totalItemsQuantityDisplay = (localStorageData) => {
-  let itemQuantityArray = createEmptyItemQuantityArray();
+  let itemQuantityArray = [];
   for (let entry of localStorageData) {
     itemQuantityArray = pushInEmptyItemQuantityArray(
       itemQuantityArray,
@@ -372,14 +369,6 @@ const totalItemsQuantityDisplay = (localStorageData) => {
 //------------------------------------------------------------------------------------
 //                    Affichage prix total des articles du panier
 //------------------------------------------------------------------------------------
-
-/** Création d'un tableau vide pour recevoir le prix de chaque item du panier
- * @return {array} empty
- */
-const createEmptyItemPriceArray = () => {
-  const itemsTotalPriceArray = [];
-  return itemsTotalPriceArray;
-};
 
 /** Calcul du prix total par item du panier (quantité * prix unitaire).
  * @param {string} itemQuantity
@@ -427,7 +416,7 @@ const totalPriceDisplay = (itemsTotalPrice) => {
  * @return {HTMLElement} total of items cart price
  */
 const totalItemsPriceDisplay = async (localStorageData) => {
-  let itemsTotalPriceArray = createEmptyItemPriceArray();
+  let itemsTotalPriceArray = [];
   for (let entry of localStorageData) {
     const itemId = getItemId(entry.id);
     const itemData = await fetchItemData(itemId);
@@ -447,7 +436,7 @@ const totalItemsPriceDisplay = async (localStorageData) => {
 //                      Modification quantité d'un article
 //------------------------------------------------------------------------------------
 
-const modifyItemQuantityInit = () => {
+const modifyItemQuantityInit = (localStorageData) => {
   document.querySelectorAll(".itemQuantity").forEach((button) => {
     const itemArticle = button.closest("section > article");
     const itemId = itemArticle.dataset.id;
@@ -468,7 +457,7 @@ const modifyItemQuantityInit = () => {
 //------------------------------------------------------------------------------------
 //                           Suppression d'un article
 //------------------------------------------------------------------------------------
-const deleteItem = () => {
+const deleteItem = (localStorageData) => {
   document.querySelectorAll(".deleteItem").forEach((button) => {
     const itemArticle = button.closest("section > article");
     const itemId = itemArticle.dataset.id;
