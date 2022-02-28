@@ -38,7 +38,7 @@ const cartDisplay = async () => {
     totalItemsQuantityDisplay(localStorageData);
     totalItemsPriceDisplay(localStorageData);
     modifyItemQuantityInit(localStorageData);
-    deleteItem(localStorageData);
+    deleteItemInit(localStorageData);
   }
 };
 
@@ -411,7 +411,7 @@ const totalPriceDisplay = (itemsTotalPrice) => {
   return (document.getElementById("totalPrice").textContent = itemsTotalPrice);
 };
 
-/**
+/** Lancement de l'affichage du montant total de tous les items du panier dans la span correspondante.
  * @param {object} localStorageData
  * @return {HTMLElement} total of items cart price
  */
@@ -435,48 +435,94 @@ const totalItemsPriceDisplay = async (localStorageData) => {
 //------------------------------------------------------------------------------------
 //                      Modification quantité d'un article
 //------------------------------------------------------------------------------------
+/** Modifiaction de la quantité d'un article par l'utilisateur avec mise à jour du nombre total d'articles, du montant total du panier et du loçcal storage.
+ * @param {HTMLElement} button
+ * @param {object} localStorageData
+ * @param {string} itemId
+ * @param {string} itemColor
+ * @return {object} updated local storage
+ * @return {HTMLElement} span new items total quantity
+ * @return {HTMLElement} span new items total price
+ */
+const modifyItemQuantity = (button, localStorageData, itemId, itemColor) => {
+  button.addEventListener("change", () => {
+    for (let entry of localStorageData) {
+      if (entry.id === itemId && entry.color === itemColor) {
+        entry.quantity = button.value;
+        setLocalStorage(localStorageData);
+      }
+    }
+  });
+};
 
+/** Initialisation de la modification de la quantité d'un article par l'utilisateur.
+ * @param {object} localStorageData
+ * @return {HTMLElement} button for quantity change
+ * @return {string} item's id
+ * @return {string} item's color
+ */
 const modifyItemQuantityInit = (localStorageData) => {
   document.querySelectorAll(".itemQuantity").forEach((button) => {
     const itemArticle = button.closest("section > article");
     const itemId = itemArticle.dataset.id;
     const itemColor = itemArticle.dataset.color;
-    button.addEventListener("change", () => {
-      for (let entry of localStorageData) {
-        if (entry.id === itemId && entry.color === itemColor) {
-          entry.quantity = button.value;
-          setLocalStorage(localStorageData);
-          totalItemsQuantityDisplay(localStorageData);
-          totalItemsPriceDisplay(localStorageData);
-        }
-      }
-    });
+    modifyItemQuantity(button, localStorageData, itemId, itemColor);
   });
 };
 
 //------------------------------------------------------------------------------------
 //                           Suppression d'un article
 //------------------------------------------------------------------------------------
-const deleteItem = (localStorageData) => {
+
+/** Suppression d'un article par l'utilisateur avec mise à jour...........
+ * @param {HTMLElement} button
+ * @param {object} localStorageData
+ * @param {string} itemId
+ * @param {string} itemColor
+ * @return {object} updated local storage
+ */
+const deleteItem = (button, localStorageData, itemId, itemColor) => {
+  button.addEventListener("click", () => {
+    for (let entry of localStorageData) {
+      if (entry.id === itemId && entry.color === itemColor) {
+        if (
+          confirm(
+            `Vous allez supprimer cet article de votre panier. \nOK pour confirmer \nANNULER pour revenir au panier`
+          )
+        ) {
+          localStorageData.splice(localStorageData.indexOf(entry), 1);
+          itemRemove(itemId, entry);
+          setLocalStorage(localStorageData);
+          totalItemsQuantityDisplay(localStorageData);
+          totalItemsPriceDisplay(localStorageData);
+        }
+      }
+    }
+  });
+};
+
+/** Supprime l'élément HTML <article> qui contient l'article du panier que l'utilisateur veut supprimer.
+ * @param {string} itemId
+ * @param {object} entry
+ */
+const itemRemove = (itemId, entry) => {
+  document
+    .querySelector(`article[data-id="${itemId}"][data-color="${entry.color}"]`)
+    .remove();
+};
+
+/** Initialisation de la suppression d'un item par l'utilisateur
+ * @param {object} localStorageData
+ * @return {HTMLElement} button for item delete
+ * @return {string} item's id
+ * @return {string} item's color
+ */
+const deleteItemInit = (localStorageData) => {
   document.querySelectorAll(".deleteItem").forEach((button) => {
     const itemArticle = button.closest("section > article");
     const itemId = itemArticle.dataset.id;
     const itemColor = itemArticle.dataset.color;
-    button.addEventListener("click", () => {
-      for (let entry of localStorageData) {
-        if (entry.id === itemId && entry.color === itemColor) {
-          if (
-            confirm(
-              `Vous allez supprimer cet article de votre panier. \nOK pour confirmer \nANNULER pour revenir au panier`
-            )
-          ) {
-            localStorageData.splice(localStorageData.indexOf(entry), 1);
-            setLocalStorage(localStorageData);
-            location.reload();
-          }
-        }
-      }
-    });
+    deleteItem(button, localStorageData, itemId, itemColor);
   });
 };
 
