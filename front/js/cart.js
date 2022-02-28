@@ -450,6 +450,8 @@ const modifyItemQuantity = (button, localStorageData, itemId, itemColor) => {
       if (entry.id === itemId && entry.color === itemColor) {
         entry.quantity = button.value;
         setLocalStorage(localStorageData);
+        totalItemsQuantityDisplay(localStorageData);
+        totalItemsPriceDisplay(localStorageData);
       }
     }
   });
