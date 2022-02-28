@@ -153,6 +153,11 @@ const newEntryPush = (localStorageData, productToPush) => {
 
 /** Envoi du contenu du tableau dans le local storage dans la clé "cart". */
 const setLocalStorage = (cartData) => {
+  cartData.sort((a, b) => {
+    if (a.id < b.id) return -1;
+    if (a.id > b.id) return 1;
+    return 0;
+  });
   const cartDataToStringnify = JSON.stringify(cartData);
   window.localStorage.setItem("cart", cartDataToStringnify);
 };
