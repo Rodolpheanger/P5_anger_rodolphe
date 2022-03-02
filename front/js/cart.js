@@ -2,32 +2,8 @@
 //                          Affichage du contenu du panier
 //------------------------------------------------------------------------------------
 
-/** Récupération des données du local storage. */
-const getLocalStorage = () => {
-  const localStorageData =
-    JSON.parse(window.localStorage.getItem("cart")) ?? [];
-  return localStorageData;
-};
-
-/** Envoi du contenu du tableau dans le local storage dans la clé "cart". */
-const setLocalStorage = (cartData) => {
-  const cartDataToStringnify = JSON.stringify(cartData);
-  window.localStorage.setItem("cart", cartDataToStringnify);
-};
-
-/** Récupérations des données de l'API par id. */
-const fetchItemData = async (itemId) => {
-  try {
-    const response = await fetch(
-      "http://localhost:3000/api/products/" + itemId
-    );
-    return (data = await response.json());
-  } catch (error) {
-    alert(error);
-  }
-};
-
-/** Affichage des items contenus dans le panier, de la quantité total et du prix total. */
+/** Affichage des items contenus dans le panier, de la quantité total et du prix total + initialisation pour la modification de quantité, la suppression de produit et l'envoi de la commande.
+ */
 const cartInit = async () => {
   const localStorageData = getLocalStorage();
   if (localStorageData.length === 0) {
@@ -43,9 +19,42 @@ const cartInit = async () => {
   }
 };
 
+/** Récupération des données du local storage.
+ * @returns {array} array of products in local storage
+ */
+const getLocalStorage = () => {
+  const localStorageData =
+    JSON.parse(window.localStorage.getItem("cart")) ?? [];
+  return localStorageData;
+};
+
+/** Envoi du contenu du tableau dans le local storage dans la clé "cart".
+ * @param {array} cartData
+ * @returns {array} array of products to set in local storage
+ */
+const setLocalStorage = (cartData) => {
+  const cartDataToStringnify = JSON.stringify(cartData);
+  window.localStorage.setItem("cart", cartDataToStringnify);
+};
+
+/** Récupérations des données de l'API par id.
+ * @param {string} itemId
+ * @returns {object} product data from the API
+ */
+const fetchItemData = async (itemId) => {
+  try {
+    const response = await fetch(
+      "http://localhost:3000/api/products/" + itemId
+    );
+    return (data = await response.json());
+  } catch (error) {
+    alert(error);
+  }
+};
+
 /** Récupération de l'id de chaque item du panier.
  * @param {string} entryId
- * @return {string}
+ * @returns {string}
  */
 const getItemId = (entryId) => {
   const itemId = entryId;
@@ -54,7 +63,7 @@ const getItemId = (entryId) => {
 
 /** Pointage de la section HTML qui contient tous les items et ajout à l'intérieur des articles HTML contenant les items du panier.
  * @param {HTMLElement} article
- * @return {HTMLElement} section
+ * @returns {HTMLElement} section
  */
 const getCartItemsContainer = (article) => {
   return document.getElementById("cart__items").appendChild(article);
@@ -65,7 +74,7 @@ const getCartItemsContainer = (article) => {
  * @param {string} itemColor
  * @param {HTMLElement} divImage
  * @param {HTMLElement} divItemContentContainer
- * @return {HTMLElement} article
+ * @returns {HTMLElement} article
  */
 const createItemContainer = (
   itemId,
@@ -84,7 +93,7 @@ const createItemContainer = (
 
 /** Création de la div qui contient l'image de l'item et ajout de celle-ci à l'intérieur.
  * @param {HTMLElement}cartItemImage
- * @return {HTMLElement} div
+ * @returns {HTMLElement} div
  */
 const createItemImageContainer = (cartItemImage) => {
   const divImage = document.createElement("div");
@@ -96,7 +105,7 @@ const createItemImageContainer = (cartItemImage) => {
 /** Création pour affichage de l'image de l'item.
  * @param {string} itemImageUrl
  * @param {string} itemAltTxt
- * @return {HTMLElement} img
+ * @returns {HTMLElement} img
  */
 const itemImageDisplay = (itemImageUrl, itemAltTxt) => {
   const cartItemImage = document.createElement("img");
@@ -108,7 +117,7 @@ const itemImageDisplay = (itemImageUrl, itemAltTxt) => {
 /** Création de la div qui contient les 2 div qui contiennent les détails de l'item (nom, couleur, prix unitaire, quantité) et le bouton "supprimer" et ajout de celles-ci à l'intérieur.
  * @param {HTMLElement} divItemContentDescriptionContainer
  * @param {HTMLElement} divItemContentSettingsContainer
- * @return {HTMLElement} div
+ * @returns {HTMLElement} div
  */
 const createItemContentContainer = (
   divItemContentDescriptionContainer,
@@ -125,7 +134,7 @@ const createItemContentContainer = (
  * @param {string} cartItemName
  * @param {string} cartItemColor
  * @param {string} cartItemPrice
- * @return {HTMLElement} div
+ * @returns {HTMLElement} div
  */
 const createItemContentDescriptionContainer = (
   cartItemName,
@@ -144,8 +153,8 @@ const createItemContentDescriptionContainer = (
 
 /** Création pour affichage du nom de l'item:
  * @param {string} itemDataName
- * @return {HTMLElement} h2
- * @return {string} name of item
+ * @returns {HTMLElement} h2
+ * @returns {string} name of item
  */
 const itemNameDisplay = (itemDataName) => {
   const cartItemName = document.createElement("h2");
@@ -155,8 +164,8 @@ const itemNameDisplay = (itemDataName) => {
 
 /** Création pour affichage de la couleur de l'item:
  * @param {string} itemDataColor
- * @return {HTMLElement} p
- * @return {string} color of item
+ * @returns {HTMLElement} p
+ * @returns {string} color of item
  */
 const itemColorDisplay = (itemDataColor) => {
   const cartItemColor = document.createElement("p");
@@ -166,8 +175,8 @@ const itemColorDisplay = (itemDataColor) => {
 
 /** Création pour affichage du prix de l'item
  * @param {string} itemDataPrice
- * @return {HTMLElement} p
- * @return {string} price of item
+ * @returns {HTMLElement} p
+ * @returns {string} price of item
 
 */
 const itemPriceDisplay = (itemDataPrice) => {
@@ -179,7 +188,7 @@ const itemPriceDisplay = (itemDataPrice) => {
 /** Création de la div qui contient les 2 div qui contiennent la quantité de l'item  et le button "supprimer" et ajout de celles-ci à l'intérieur.
  * @param {HTMLElement} divItemContentSettingsQuantityContainer
  * @param {HTMLElement} divItemContentSettingsQuantityContainer
- * @return {HTMLElement} div
+ * @returns {HTMLElement} div
  */
 const createItemContentSettingsContainer = (
   divItemContentSettingsQuantityContainer,
@@ -201,7 +210,7 @@ const createItemContentSettingsContainer = (
 /** Création de la div qui contient le pré-texte et l'input de la quantité de l'item et ajout de ceux-ci à l'interieur.
  * @param {HTMLElement} preTextItemQuantity
  * @param {HTMLElement} itemQuantityInput
- * @return {HTMLElement} div
+ * @returns {HTMLElement} div
  */
 const createItemContentSettingsQuantityContainer = (
   preTextItemQuantity,
@@ -217,8 +226,8 @@ const createItemContentSettingsQuantityContainer = (
 };
 
 /** Création pour affichage du pré-texte pour la quantité de l'item.
- * @return {HTMLElement} p
- * @return {String} "Qté : "
+ * @returns {HTMLElement} p
+ * @returns {String} "Qté : "
  */
 const itemQuantityPreTextDisplay = () => {
   const preTextItemQuantity = document.createElement("p");
@@ -228,7 +237,7 @@ const itemQuantityPreTextDisplay = () => {
 
 /** Création pour affichage de l'input pour la quantité de l'item.
  * @param {string} itemDataQuantity
- * @return {HTMLElement} input
+ * @returns {HTMLElement} input
  */
 const itemQuantityInputDisplay = (itemDataQuantity) => {
   const itemQuantityInput = document.createElement("input");
@@ -242,7 +251,7 @@ const itemQuantityInputDisplay = (itemDataQuantity) => {
 };
 /** Création de la div qui contient le button "supprimer" et ajout de celui-ci à l'interieur.
  * @param {HTMLElement} itemContentSettingsDeleteButton
- * @return {HTMLElement} div
+ * @returns {HTMLElement} div
  */
 const createItemContentSettingsDeleteContainer = (
   itemContentSettingsDeleteButton
@@ -328,13 +337,13 @@ const itemsDisplay = async (localStorageData) => {
 //------------------------------------------------------------------------------------
 
 /** Création d'un tableau vide pour recevoir la quantité de chaque item du panier
- * @return {array} empty
+ * @returns {array} empty
  */
 
 /** Push de la quantité définie pour chaque item du panier dans le tableau en la convertissant en "number".
  * @param {string} itemQuantityArray
  * @param {string} itemDataQuantity
- * @return {array} contain all the items individual quantity
+ * @returns {array} contain all the items individual quantity
  */
 const pushInEmptyItemQuantityArray = (itemQuantityArray, itemDataQuantity) => {
   const itemDataQuantityToNumber = Number.parseInt(itemDataQuantity);
@@ -344,7 +353,7 @@ const pushInEmptyItemQuantityArray = (itemQuantityArray, itemDataQuantity) => {
 
 /** Calcul de la somme du tableau contenant les quantité d'item.
  * @param {array} itemQuantityArray
- * @return {number} sum of itemQuantityArray values
+ * @returns {number} sum of itemQuantityArray values
  */
 const calculateTotalItemsQuantity = (itemQuantityArray) => {
   let sumItemsQuantity = 0;
@@ -374,7 +383,7 @@ const totalItemsQuantityDisplay = (localStorageData) => {
 /** Calcul du prix total par item du panier (quantité * prix unitaire).
  * @param {string} itemQuantity
  * @param {number} itemPrice
- * @return {number} total price by item of the cart
+ * @returns {number} total price by item of the cart
  */
 const calculateTotalPriceByItem = (itemQuantity, itemPrice) => {
   const totalPriceByItem = itemQuantity * itemPrice;
@@ -384,7 +393,7 @@ const calculateTotalPriceByItem = (itemQuantity, itemPrice) => {
 /** Push du prix total pour chaque item du panier dans le tableau.
  * @param {array} itemsTotalPriceArray
  * @param {number} totalaPriceByItem
- * @return {array} contain all the items total price
+ * @returns {array} contain all the items total price
  */
 const createItemsTotalPriceArray = (
   itemsTotalPriceArray,
@@ -396,7 +405,7 @@ const createItemsTotalPriceArray = (
 
 /** Calcul du montant total de tous les items du panier.
  * @param {array} itemsTotalPriceArray
- * @return {number} total of items cart price
+ * @returns {number} total of items cart price
  */
 const calculateItemsTotalPrice = (itemsTotalPriceArray) => {
   let itemsTotalPrice = 0;
@@ -406,7 +415,7 @@ const calculateItemsTotalPrice = (itemsTotalPriceArray) => {
 
 /** Affichage du montant total de tous les items du panier dans la span correspondante.
  * @param {number} itemsTotalPrice
- * @return {HTMLElement} total of items cart price
+ * @returns {HTMLElement} total of items cart price
  */
 const totalPriceDisplay = (itemsTotalPrice) => {
   return (document.getElementById("totalPrice").textContent = itemsTotalPrice);
@@ -414,7 +423,7 @@ const totalPriceDisplay = (itemsTotalPrice) => {
 
 /** Lancement de l'affichage du montant total de tous les items du panier dans la span correspondante.
  * @param {object} localStorageData
- * @return {HTMLElement} total of items cart price
+ * @returns {HTMLElement} total of items cart price
  */
 const totalItemsPriceDisplay = async (localStorageData) => {
   let itemsTotalPriceArray = [];
@@ -441,9 +450,9 @@ const totalItemsPriceDisplay = async (localStorageData) => {
  * @param {object} localStorageData
  * @param {string} itemId
  * @param {string} itemColor
- * @return {object} updated local storage
- * @return {HTMLElement} span new items total quantity
- * @return {HTMLElement} span new items total price
+ * @returns {object} updated local storage
+ * @returns {HTMLElement} span new items total quantity
+ * @returns {HTMLElement} span new items total price
  */
 const modifyItemQuantity = (button, localStorageData, itemId, itemColor) => {
   button.addEventListener("change", () => {
@@ -460,9 +469,9 @@ const modifyItemQuantity = (button, localStorageData, itemId, itemColor) => {
 
 /** Initialisation de la modification de la quantité d'un article par l'utilisateur.
  * @param {object} localStorageData
- * @return {HTMLElement} button for quantity change
- * @return {string} item's id
- * @return {string} item's color
+ * @returns {HTMLElement} button for quantity change
+ * @returns {string} item's id
+ * @returns {string} item's color
  */
 const modifyItemQuantityInit = (localStorageData) => {
   document.querySelectorAll(".itemQuantity").forEach((button) => {
@@ -482,7 +491,7 @@ const modifyItemQuantityInit = (localStorageData) => {
  * @param {object} localStorageData
  * @param {string} itemId
  * @param {string} itemColor
- * @return {object} updated local storage
+ * @returns {object} updated local storage
  */
 const deleteItem = (button, localStorageData, itemId, itemColor) => {
   button.addEventListener("click", () => {
@@ -516,9 +525,9 @@ const itemRemove = (itemId, entry) => {
 
 /** Initialisation de la suppression d'un item par l'utilisateur
  * @param {object} localStorageData
- * @return {HTMLElement} button for item delete
- * @return {string} item's id
- * @return {string} item's color
+ * @returns {HTMLElement} button for item delete
+ * @returns {string} item's id
+ * @returns {string} item's color
  */
 const deleteItemInit = (localStorageData) => {
   document.querySelectorAll(".deleteItem").forEach((button) => {
@@ -530,86 +539,11 @@ const deleteItemInit = (localStorageData) => {
 };
 
 //------------------------------------------------------------------------------------
-//                         Formulaire + envoi
+//                         Formulaire + envoi de la commande
 //------------------------------------------------------------------------------------
 
-const setOrderInit = (localStorageData) => {
-  formChecker();
-  formSubmit(localStorageData);
-};
-
-const firstNameChecker = () => {
-  const firstNameErrorMsg = document.getElementById("firstNameErrorMsg");
-  if (
-    /^[a-zA-záàâäãåçéèêëíìîïñóòôöõúùûüýÿæœÁÀÂÄÃÅÇÉÈÊËÍÌÎÏÑÓÒÔÖÕÚÙÛÜÝŸÆŒ-\s]*$/.test(
-      firstName.value
-    )
-  ) {
-    firstNameErrorMsg.textContent = "";
-    return true;
-  } else {
-    firstNameErrorMsg.textContent = "Saisie non valide";
-    return false;
-  }
-};
-
-const lastNameChecker = () => {
-  const lastNameErrorMsg = document.getElementById("lastNameErrorMsg");
-  if (
-    /^[a-zA-záàâäãåçéèêëíìîïñóòôöõúùûüýÿæœÁÀÂÄÃÅÇÉÈÊËÍÌÎÏÑÓÒÔÖÕÚÙÛÜÝŸÆŒ-\s]*$/.test(
-      lastName.value
-    )
-  ) {
-    lastNameErrorMsg.textContent = "";
-    return true;
-  } else {
-    lastNameErrorMsg.textContent = "Saisie non valide";
-    return false;
-  }
-};
-const addressChecker = () => {
-  const addressErrorMsg = document.getElementById("addressErrorMsg");
-  if (
-    /^[a-zA-z0-9,áàâäãåçéèêëíìîïñóòôöõúùûüýÿæœÁÀÂÄÃÅÇÉÈÊËÍÌÎÏÑÓÒÔÖÕÚÙÛÜÝŸÆŒ-\s]*$/.test(
-      address.value
-    )
-  ) {
-    addressErrorMsg.textContent = "";
-    return true;
-  } else {
-    addressErrorMsg.textContent = "Saisie non valide";
-    return false;
-  }
-};
-const cityChecker = () => {
-  const cityErrorMsg = document.getElementById("cityErrorMsg");
-  if (
-    /^[a-zA-z0-9áàâäãåçéèêëíìîïñóòôöõúùûüýÿæœÁÀÂÄÃÅÇÉÈÊËÍÌÎÏÑÓÒÔÖÕÚÙÛÜÝŸÆŒ-\s]*$/.test(
-      city.value
-    )
-  ) {
-    cityErrorMsg.textContent = "";
-    return true;
-  } else {
-    cityErrorMsg.textContent = "Saisie non valide";
-    return false;
-  }
-};
-const emailChecker = () => {
-  const emailErrorMsg = document.getElementById("emailErrorMsg");
-  if (
-    /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,4}))$/i.test(
-      email.value
-    )
-  ) {
-    emailErrorMsg.textContent = "";
-    return true;
-  } else {
-    emailErrorMsg.textContent = "Saisie non valide";
-    return false;
-  }
-};
-
+/** Mise en place d'un listener sur les inputs du formulaire pour vérifier la validité de la saisie
+ */
 const formChecker = () => {
   firstName.addEventListener("input", () => {
     firstNameChecker();
@@ -628,6 +562,99 @@ const formChecker = () => {
   });
 };
 
+/** Vérification de la validité de la saise du champ Prénom, avec affichage du message d'erreur sous l'input si non valide.
+ * @returns {boolean} true if valid else false
+ */
+const firstNameChecker = () => {
+  const firstNameErrorMsg = document.getElementById("firstNameErrorMsg");
+  if (
+    /^[a-zA-ZáàâäãåçéèêëíìîïñóòôöõúùûüýÿæœÁÀÂÄÃÅÇÉÈÊËÍÌÎÏÑÓÒÔÖÕÚÙÛÜÝŸÆŒ-\s]*$/.test(
+      firstName.value
+    )
+  ) {
+    firstNameErrorMsg.textContent = "";
+    return true;
+  } else {
+    firstNameErrorMsg.textContent = "Saisie non valide";
+    return false;
+  }
+};
+
+/** Vérification de la validité de la saise du champ Nom, avec affichage du message d'erreur sous l'input si non valide.
+ * @returns {boolean} true if valid else false
+ */
+const lastNameChecker = () => {
+  const lastNameErrorMsg = document.getElementById("lastNameErrorMsg");
+  if (
+    /^[a-zA-ZáàâäãåçéèêëíìîïñóòôöõúùûüýÿæœÁÀÂÄÃÅÇÉÈÊËÍÌÎÏÑÓÒÔÖÕÚÙÛÜÝŸÆŒ-\s]*$/.test(
+      lastName.value
+    )
+  ) {
+    lastNameErrorMsg.textContent = "";
+    return true;
+  } else {
+    lastNameErrorMsg.textContent = "Saisie non valide";
+    return false;
+  }
+};
+
+/** Vérification de la validité de la saise du champ Adresse, avec affichage du message d'erreur sous l'input si non valide.
+ * @returns {boolean} true if valid else false
+ */
+const addressChecker = () => {
+  const addressErrorMsg = document.getElementById("addressErrorMsg");
+  if (
+    /^[a-zA-z0-9,áàâäãåçéèêëíìîïñóòôöõúùûüýÿæœÁÀÂÄÃÅÇÉÈÊËÍÌÎÏÑÓÒÔÖÕÚÙÛÜÝŸÆŒ-\s]*$/.test(
+      address.value
+    )
+  ) {
+    addressErrorMsg.textContent = "";
+    return true;
+  } else {
+    addressErrorMsg.textContent = "Saisie non valide";
+    return false;
+  }
+};
+
+/** Vérification de la validité de la saise du champ Ville, avec affichage du message d'erreur sous l'input si non valide.
+ * @returns {boolean} true if valid else false
+ */
+const cityChecker = () => {
+  const cityErrorMsg = document.getElementById("cityErrorMsg");
+  if (
+    /^[a-zA-z0-9áàâäãåçéèêëíìîïñóòôöõúùûüýÿæœÁÀÂÄÃÅÇÉÈÊËÍÌÎÏÑÓÒÔÖÕÚÙÛÜÝŸÆŒ-\s]*$/.test(
+      city.value
+    )
+  ) {
+    cityErrorMsg.textContent = "";
+    return true;
+  } else {
+    cityErrorMsg.textContent = "Saisie non valide";
+    return false;
+  }
+};
+
+/** Vérification de la validité de la saise du champ Email, avec affichage du message d'erreur sous l'input si non valide.
+ * @returns {boolean} true if valid else false
+ */
+const emailChecker = () => {
+  const emailErrorMsg = document.getElementById("emailErrorMsg");
+  if (
+    /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,4}))$/i.test(
+      email.value
+    )
+  ) {
+    emailErrorMsg.textContent = "";
+    return true;
+  } else {
+    emailErrorMsg.textContent = "Saisie non valide";
+    return false;
+  }
+};
+
+/** Récupértation du booleen généré par les fonctions de vérification.
+ * @returns {boolean} true if valid else false
+ */
 formValidity = () => {
   const firstNameValidity = firstNameChecker();
   const lastNameValidity = lastNameChecker();
@@ -643,6 +670,9 @@ formValidity = () => {
   };
 };
 
+/** Récupération des informations saisies par l'utilisateur.
+ * @returns {object} firstName, lastName, address, city and email
+ */
 const getUserData = () => {
   return {
     firstName: firstName.value,
@@ -653,6 +683,9 @@ const getUserData = () => {
   };
 };
 
+/** Récupération des id des produits présents dans le panier.
+ * @returns {array} id of cart's products
+ */
 const getProductsId = (localStorageData) => {
   let productsId = [];
   for (let entry of localStorageData) {
@@ -661,6 +694,8 @@ const getProductsId = (localStorageData) => {
   return productsId;
 };
 
+/** Vérifications de la validité des infos saisies par l'utilisateur et si tous les champs sont valides, envoi de la requête à l'API , récupération de l'order id, suppression du contenu du local storage et redirection vers la page confirmation avec ajout de l'order id dans l'url. Si non valides affichage message erreur.
+ */
 const setOrder = async (
   firstNameValidity,
   lastNameValidity,
@@ -703,6 +738,7 @@ const setOrder = async (
   }
 };
 
+/** Mise en place du listener sur le formulaire pour l'action "submit" avec récupération du booléen de validation, des infos saisies par l'utilisateur et des id des produits du panier puis lancement de la fonction précédente. */
 const formSubmit = (localStorageData) => {
   document
     .querySelector(".cart__order__form")
@@ -729,5 +765,15 @@ const formSubmit = (localStorageData) => {
     });
 };
 
-/** Initialisation de la page.*/
+/** Initialisation des fonctions de vérification du formulaire et de l'envoi de la commande. */
+const setOrderInit = (localStorageData) => {
+  formChecker();
+  formSubmit(localStorageData);
+};
+
+//------------------------------------------------------------------------------------
+//                                  Initialisation
+//------------------------------------------------------------------------------------
+
+/** Lancement de l'initialisation de la page.*/
 cartInit();

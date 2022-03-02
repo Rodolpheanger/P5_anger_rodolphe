@@ -1,5 +1,5 @@
 /** Récupération des données de l'API pour tous les produits.
- * @return {array} local storage content
+ * @returns {array} local storage content
  */
 const fetchItems = async () => {
   try {
@@ -11,7 +11,7 @@ const fetchItems = async () => {
 };
 
 /** Affichage de toutes les cartes produit.
- * @return {HTMLElements} items card
+ * @returns {HTMLElements} items card
  */
 const itemsDisplay = async () => {
   const itemsData = await fetchItems();
@@ -28,7 +28,7 @@ const itemsDisplay = async () => {
 /** Création du lien d'un produit vers sa page dédiée.
  * @param {string} itemId
  * @param {HTMLElement} article
- * @return {HTMLElement} a
+ * @returns {HTMLElement} a
  */
 const itemLinkDisplay = (itemId, article) => {
   const link = document.createElement("a");
@@ -41,7 +41,7 @@ const itemLinkDisplay = (itemId, article) => {
  * @param {HTMLElement} image
  * @param {HTMLElement} nameOfItem
  * @param {HTMLElement} description
- * @return {HTMLElement} article
+ * @returns {HTMLElement} article
  */
 const itemArticleDisplay = (image, nameOfItem, description) => {
   const article = document.createElement("article");
@@ -54,7 +54,7 @@ const itemArticleDisplay = (image, nameOfItem, description) => {
 /** Création de l'image d'un produit.
  * @param {string} itemImageUrl
  * @param {string} itemAltTxt
- * @return {HTMLElement} img
+ * @returns {HTMLElement} img
  */
 const itemImageDisplay = (itemImageUrl, itemAltTxt) => {
   const image = document.createElement("img");
@@ -65,7 +65,7 @@ const itemImageDisplay = (itemImageUrl, itemAltTxt) => {
 
 /** Création du nom d'un produit.
  * @param {string} itemName
- * @return {HTMLElement} h3
+ * @returns {HTMLElement} h3
  */
 const itemNameDisplay = (itemName) => {
   const nameOfItem = document.createElement("h3");
@@ -76,7 +76,7 @@ const itemNameDisplay = (itemName) => {
 
 /** Création de la description d'un produit.
  * @param {string} itemDescription
- * @return {HTMLElement} p
+ * @returns {HTMLElement} p
  */
 const itemDescriptionDisplay = (itemDescription) => {
   const description = document.createElement("p");
@@ -87,7 +87,7 @@ const itemDescriptionDisplay = (itemDescription) => {
 
 /** Création du container pour la carte d'un produit.
  * @param {HTMLElement} link
- * @return {HTMLElement} section
+ * @returns {HTMLElement} section
  */
 const itemContainerSelect = (link) => {
   const section = document.getElementById("items").appendChild(link);
