@@ -13,4 +13,5 @@ const orderIdDisplay = () => {
   document.getElementById("orderId").textContent = `${orderId}`;
 };
 
+/** Lancement de l'affichage de l'order id.*/
 orderIdDisplay();
