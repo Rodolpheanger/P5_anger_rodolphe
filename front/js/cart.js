@@ -28,13 +28,14 @@ const fetchItemData = async (itemId) => {
 };
 
 /** Affichage des items contenus dans le panier, de la quantité total et du prix total. */
-const cartDisplay = async () => {
+const cartInit = async () => {
   const localStorageData = getLocalStorage();
   if (localStorageData.length === 0) {
     alert(`Votre panier est vide, veuillez y ajouter des articles.`);
     location.href = "../html/index.html";
   } else {
     await itemsDisplay(localStorageData);
+    setOrderInit(localStorageData);
     totalItemsQuantityDisplay(localStorageData);
     totalItemsPriceDisplay(localStorageData);
     modifyItemQuantityInit(localStorageData);
@@ -529,8 +530,204 @@ const deleteItemInit = (localStorageData) => {
 };
 
 //------------------------------------------------------------------------------------
-//                                  Formulaire
+//                         Formulaire + envoi
 //------------------------------------------------------------------------------------
 
-/** Lancement de l'affichage des items du panier. */
-cartDisplay();
+const setOrderInit = (localStorageData) => {
+  formChecker();
+  formSubmit(localStorageData);
+};
+
+const firstNameChecker = () => {
+  const firstNameErrorMsg = document.getElementById("firstNameErrorMsg");
+  if (
+    /^[a-zA-záàâäãåçéèêëíìîïñóòôöõúùûüýÿæœÁÀÂÄÃÅÇÉÈÊËÍÌÎÏÑÓÒÔÖÕÚÙÛÜÝŸÆŒ-\s]*$/.test(
+      firstName.value
+    )
+  ) {
+    firstNameErrorMsg.textContent = "";
+    return true;
+  } else {
+    firstNameErrorMsg.textContent = "Saisie non valide";
+    return false;
+  }
+};
+
+const lastNameChecker = () => {
+  const lastNameErrorMsg = document.getElementById("lastNameErrorMsg");
+  if (
+    /^[a-zA-záàâäãåçéèêëíìîïñóòôöõúùûüýÿæœÁÀÂÄÃÅÇÉÈÊËÍÌÎÏÑÓÒÔÖÕÚÙÛÜÝŸÆŒ-\s]*$/.test(
+      lastName.value
+    )
+  ) {
+    lastNameErrorMsg.textContent = "";
+    return true;
+  } else {
+    lastNameErrorMsg.textContent = "Saisie non valide";
+    return false;
+  }
+};
+const addressChecker = () => {
+  const addressErrorMsg = document.getElementById("addressErrorMsg");
+  if (
+    /^[a-zA-z0-9,áàâäãåçéèêëíìîïñóòôöõúùûüýÿæœÁÀÂÄÃÅÇÉÈÊËÍÌÎÏÑÓÒÔÖÕÚÙÛÜÝŸÆŒ-\s]*$/.test(
+      address.value
+    )
+  ) {
+    addressErrorMsg.textContent = "";
+    return true;
+  } else {
+    addressErrorMsg.textContent = "Saisie non valide";
+    return false;
+  }
+};
+const cityChecker = () => {
+  const cityErrorMsg = document.getElementById("cityErrorMsg");
+  if (
+    /^[a-zA-z0-9áàâäãåçéèêëíìîïñóòôöõúùûüýÿæœÁÀÂÄÃÅÇÉÈÊËÍÌÎÏÑÓÒÔÖÕÚÙÛÜÝŸÆŒ-\s]*$/.test(
+      city.value
+    )
+  ) {
+    cityErrorMsg.textContent = "";
+    return true;
+  } else {
+    cityErrorMsg.textContent = "Saisie non valide";
+    return false;
+  }
+};
+const emailChecker = () => {
+  const emailErrorMsg = document.getElementById("emailErrorMsg");
+  if (
+    /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,4}))$/i.test(
+      email.value
+    )
+  ) {
+    emailErrorMsg.textContent = "";
+    return true;
+  } else {
+    emailErrorMsg.textContent = "Saisie non valide";
+    return false;
+  }
+};
+
+const formChecker = () => {
+  firstName.addEventListener("input", () => {
+    firstNameChecker();
+  });
+  lastName.addEventListener("input", () => {
+    lastNameChecker();
+  });
+  address.addEventListener("input", () => {
+    addressChecker();
+  });
+  city.addEventListener("input", () => {
+    cityChecker();
+  });
+  email.addEventListener("input", () => {
+    emailChecker();
+  });
+};
+
+formValidity = () => {
+  const firstNameValidity = firstNameChecker();
+  const lastNameValidity = lastNameChecker();
+  const addressValidity = addressChecker();
+  const cityValidity = cityChecker();
+  const emailValidity = emailChecker();
+  return {
+    firstNameValidity,
+    lastNameValidity,
+    addressValidity,
+    cityValidity,
+    emailValidity,
+  };
+};
+
+const getUserData = () => {
+  return {
+    firstName: firstName.value,
+    lastName: lastName.value,
+    address: address.value,
+    city: city.value,
+    email: email.value,
+  };
+};
+
+const getProductsId = (localStorageData) => {
+  let productsId = [];
+  for (let entry of localStorageData) {
+    productsId.push(entry.id);
+  }
+  return productsId;
+};
+
+const setOrder = async (
+  firstNameValidity,
+  lastNameValidity,
+  addressValidity,
+  cityValidity,
+  emailValidity,
+  productsId,
+  userData
+) => {
+  if (
+    firstNameValidity === true &&
+    lastNameValidity === true &&
+    addressValidity === true &&
+    cityValidity === true &&
+    emailValidity === true
+  ) {
+    const fetchPostOrder = async () => {
+      try {
+        const response = await fetch(
+          "http://localhost:3000/api/products/order",
+          {
+            method: "POST",
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ contact: userData, products: productsId }),
+          }
+        );
+        return (data = response.json());
+      } catch (error) {
+        alert(error);
+      }
+    };
+    const orderId = await fetchPostOrder();
+    // localStorage.clear();
+    location.href = `../html/confirmation.html?orderId=${orderId.orderId}`;
+  } else {
+    alert("Veuillez corriger le ou les champs non valides");
+  }
+};
+
+const formSubmit = (localStorageData) => {
+  document
+    .querySelector(".cart__order__form")
+    .addEventListener("submit", (e) => {
+      e.preventDefault();
+      const {
+        firstNameValidity,
+        lastNameValidity,
+        addressValidity,
+        cityValidity,
+        emailValidity,
+      } = formValidity();
+      const productsId = getProductsId(localStorageData);
+      const userData = getUserData();
+      setOrder(
+        firstNameValidity,
+        lastNameValidity,
+        addressValidity,
+        cityValidity,
+        emailValidity,
+        productsId,
+        userData
+      );
+    });
+};
+
+/** Initialisation de la page.*/
+cartInit();
