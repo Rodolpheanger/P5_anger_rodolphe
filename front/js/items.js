@@ -94,5 +94,9 @@ const itemContainerSelect = (link) => {
   return section;
 };
 
+//------------------------------------------------------------------------------------
+//                                  Initialisation
+//------------------------------------------------------------------------------------
+
 /** Lancement de l'affichage des produits. */
 itemsDisplay();

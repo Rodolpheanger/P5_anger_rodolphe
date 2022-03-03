@@ -222,5 +222,9 @@ const validationMessage = (itemQuantity, itemName, itemColor) => {
   }
 };
 
+//------------------------------------------------------------------------------------
+//                                  Initialisation
+//------------------------------------------------------------------------------------
+
 /** Lancement de l'initialisation de la page */
 productPageInit();

@@ -321,7 +321,7 @@ const itemDisplay = (entry, itemId, itemData) => {
   getCartItemsContainer(itemContainer);
 };
 
-/** Lancement de l'affichage des items + initialisation modification quantité et suppression article
+/** Lancement de l'affichage des items
  * @param {object} localStorageData
  */
 const itemsDisplay = async (localStorageData) => {
@@ -335,10 +335,6 @@ const itemsDisplay = async (localStorageData) => {
 //------------------------------------------------------------------------------------
 //                    Affichage quantité total d'article du panier
 //------------------------------------------------------------------------------------
-
-/** Création d'un tableau vide pour recevoir la quantité de chaque item du panier
- * @returns {array} empty
- */
 
 /** Push de la quantité définie pour chaque item du panier dans le tableau en la convertissant en "number".
  * @param {string} itemQuantityArray
@@ -442,10 +438,28 @@ const totalItemsPriceDisplay = async (localStorageData) => {
   const itemsTotalPrice = calculateItemsTotalPrice(itemsTotalPriceArray);
   totalPriceDisplay(itemsTotalPrice);
 };
+
 //------------------------------------------------------------------------------------
-//                      Modification quantité d'un article
+//                Modification quantité et suppression d'un article
 //------------------------------------------------------------------------------------
-/** Modifiaction de la quantité d'un article par l'utilisateur avec mise à jour du nombre total d'articles, du montant total du panier et du loçcal storage.
+
+/** Récupère l'article HTML qui contient l'article dont l'utilisateur souhaite modifier la quantité ou supprimer et renvoi son id et sa couleur.
+ * @param {HTMLElement} button
+ * @returns {string} item's id
+ * @returns {string} item's color
+ */
+const getSelectedItemArticle = (button) => {
+  const itemArticle = button.closest("section > article");
+  const itemId = itemArticle.dataset.id;
+  const itemColor = itemArticle.dataset.color;
+  return { itemId, itemColor };
+};
+
+//------------------------------------
+// Modification quantité d'un article
+//------------------------------------
+
+/** Modifiaction de la quantité d'un article par l'utilisateur avec mise à jour du nombre total d'articles, du montant total du panier et du local storage.
  * @param {HTMLElement} button
  * @param {object} localStorageData
  * @param {string} itemId
@@ -455,7 +469,7 @@ const totalItemsPriceDisplay = async (localStorageData) => {
  * @returns {HTMLElement} span new items total price
  */
 const modifyItemQuantity = (button, localStorageData, itemId, itemColor) => {
-  button.addEventListener("change", () => {
+  button.addEventListener("input", () => {
     for (let entry of localStorageData) {
       if (entry.id === itemId && entry.color === itemColor) {
         entry.quantity = button.value;
@@ -469,24 +483,23 @@ const modifyItemQuantity = (button, localStorageData, itemId, itemColor) => {
 
 /** Initialisation de la modification de la quantité d'un article par l'utilisateur.
  * @param {object} localStorageData
- * @returns {HTMLElement} button for quantity change
+ * @returns {HTMLElement} input for quantity change
  * @returns {string} item's id
  * @returns {string} item's color
  */
 const modifyItemQuantityInit = (localStorageData) => {
   document.querySelectorAll(".itemQuantity").forEach((button) => {
-    const itemArticle = button.closest("section > article");
-    const itemId = itemArticle.dataset.id;
-    const itemColor = itemArticle.dataset.color;
+    console.log(button);
+    const { itemId, itemColor } = getSelectedItemArticle(button);
     modifyItemQuantity(button, localStorageData, itemId, itemColor);
   });
 };
 
-//------------------------------------------------------------------------------------
-//                           Suppression d'un article
-//------------------------------------------------------------------------------------
+//-------------------------
+//Suppression d'un article
+//-------------------------
 
-/** Suppression d'un article par l'utilisateur avec mise à jour...........
+/** Suppression d'un article par l'utilisateur avec mise à jour quantité et prix total du panier
  * @param {HTMLElement} button
  * @param {object} localStorageData
  * @param {string} itemId
@@ -502,7 +515,7 @@ const deleteItem = (button, localStorageData, itemId, itemColor) => {
             `Vous allez supprimer cet article de votre panier. \nOK pour confirmer \nANNULER pour revenir au panier`
           )
         ) {
-          localStorageData.splice(localStorageData.indexOf(entry), 1);
+          localStorageItemRemove(localStorageData, entry);
           itemRemove(itemId, entry);
           setLocalStorage(localStorageData);
           totalItemsQuantityDisplay(localStorageData);
@@ -511,6 +524,14 @@ const deleteItem = (button, localStorageData, itemId, itemColor) => {
       }
     }
   });
+};
+
+/** Supprime l'objet de l'article du panier que l'utilisateur veut supprimer dans le local storage
+ * @param {array} localStorageData
+ * @param {object} entry
+ */
+const localStorageItemRemove = (localStorageData, entry) => {
+  localStorageData.splice(localStorageData.indexOf(entry), 1);
 };
 
 /** Supprime l'élément HTML <article> qui contient l'article du panier que l'utilisateur veut supprimer.
@@ -531,9 +552,7 @@ const itemRemove = (itemId, entry) => {
  */
 const deleteItemInit = (localStorageData) => {
   document.querySelectorAll(".deleteItem").forEach((button) => {
-    const itemArticle = button.closest("section > article");
-    const itemId = itemArticle.dataset.id;
-    const itemColor = itemArticle.dataset.color;
+    const { itemId, itemColor } = getSelectedItemArticle(button);
     deleteItem(button, localStorageData, itemId, itemColor);
   });
 };
@@ -567,11 +586,7 @@ const formChecker = () => {
  */
 const firstNameChecker = () => {
   const firstNameErrorMsg = document.getElementById("firstNameErrorMsg");
-  if (
-    /^[a-zA-ZáàâäãåçéèêëíìîïñóòôöõúùûüýÿæœÁÀÂÄÃÅÇÉÈÊËÍÌÎÏÑÓÒÔÖÕÚÙÛÜÝŸÆŒ-\s]*$/.test(
-      firstName.value
-    )
-  ) {
+  if (/^[a-záàâäãåçéèêëíìîïñóòôöõúùûüýÿæœ-\s]+$/i.test(firstName.value)) {
     firstNameErrorMsg.textContent = "";
     return true;
   } else {
@@ -585,11 +600,7 @@ const firstNameChecker = () => {
  */
 const lastNameChecker = () => {
   const lastNameErrorMsg = document.getElementById("lastNameErrorMsg");
-  if (
-    /^[a-zA-ZáàâäãåçéèêëíìîïñóòôöõúùûüýÿæœÁÀÂÄÃÅÇÉÈÊËÍÌÎÏÑÓÒÔÖÕÚÙÛÜÝŸÆŒ-\s]*$/.test(
-      lastName.value
-    )
-  ) {
+  if (/^[a-záàâäãåçéèêëíìîïñóòôöõúùûüýÿæœ-\s]+$/i.test(lastName.value)) {
     lastNameErrorMsg.textContent = "";
     return true;
   } else {
@@ -603,11 +614,7 @@ const lastNameChecker = () => {
  */
 const addressChecker = () => {
   const addressErrorMsg = document.getElementById("addressErrorMsg");
-  if (
-    /^[a-zA-z0-9,áàâäãåçéèêëíìîïñóòôöõúùûüýÿæœÁÀÂÄÃÅÇÉÈÊËÍÌÎÏÑÓÒÔÖÕÚÙÛÜÝŸÆŒ-\s]*$/.test(
-      address.value
-    )
-  ) {
+  if (/^[a-z0-9,áàâäãåçéèêëíìîïñóòôöõúùûüýÿæœ-\s]+$/i.test(address.value)) {
     addressErrorMsg.textContent = "";
     return true;
   } else {
@@ -621,11 +628,7 @@ const addressChecker = () => {
  */
 const cityChecker = () => {
   const cityErrorMsg = document.getElementById("cityErrorMsg");
-  if (
-    /^[a-zA-z0-9áàâäãåçéèêëíìîïñóòôöõúùûüýÿæœÁÀÂÄÃÅÇÉÈÊËÍÌÎÏÑÓÒÔÖÕÚÙÛÜÝŸÆŒ-\s]*$/.test(
-      city.value
-    )
-  ) {
+  if (/^[a-z0-9áàâäãåçéèêëíìîïñóòôöõúùûüýÿæœ-\s]+$/i.test(city.value)) {
     cityErrorMsg.textContent = "";
     return true;
   } else {
@@ -684,6 +687,7 @@ const getUserData = () => {
 };
 
 /** Récupération des id des produits présents dans le panier.
+ * @param {array} localStorageData
  * @returns {array} id of cart's products
  */
 const getProductsId = (localStorageData) => {
@@ -738,7 +742,9 @@ const setOrder = async (
   }
 };
 
-/** Mise en place du listener sur le formulaire pour l'action "submit" avec récupération du booléen de validation, des infos saisies par l'utilisateur et des id des produits du panier puis lancement de la fonction précédente. */
+/** Mise en place du listener sur le formulaire pour l'action "submit" avec récupération du booléen de validation, des infos saisies par l'utilisateur et des id des produits du panier puis lancement de la fonction précédente.
+ * @param {array} localStorageData
+ */
 const formSubmit = (localStorageData) => {
   document
     .querySelector(".cart__order__form")
@@ -765,7 +771,9 @@ const formSubmit = (localStorageData) => {
     });
 };
 
-/** Initialisation des fonctions de vérification du formulaire et de l'envoi de la commande. */
+/** Initialisation des fonctions de vérification du formulaire et de l'envoi de la commande.
+ * @param {array} localStorageData
+ */
 const setOrderInit = (localStorageData) => {
   formChecker();
   formSubmit(localStorageData);
