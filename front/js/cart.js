@@ -563,6 +563,18 @@ const deleteItemInit = (localStorageData) => {
 /** Mise en place d'un listener sur les inputs du formulaire pour vérifier la validité de la saisie
  */
 const formChecker = () => {
+  // ********************* Voir si possible de concaténer un nom de fonction ***********************
+  // const inputsId = [firstName, lastName, address, city, email];
+  // for (const element of inputsId) {
+  //   console.log(element.id);
+  //   let checkFunction = element.id + "Checker";
+  //   console.log(checkFunction);
+  //   element.addEventListener("input", () => {
+  //     checkFunction();
+  //     // eval(element.id + "Checker")();
+  //   });
+  // }
+
   firstName.addEventListener("input", () => {
     firstNameChecker();
   });
@@ -580,32 +592,35 @@ const formChecker = () => {
   });
 };
 
-/** Vérification de la validité de la saise du champ Prénom, avec affichage du message d'erreur sous l'input si non valide.
+/** Vérification de la validité de la saise du champs Prénom ou Nom, avec affichage du message d'erreur sous l'input si non valide.
+ * @param {HTMLElement} inputId
+ * @param {HTMLElement} errorMessageInput
+ * @returns {boolean} true if valid else false
+ */
+const firstAndLastNameCondition = (inputId, errorMessageInput) => {
+  if (/^[a-záàâäãåçéèêëíìîïñóòôöõúùûüýÿæœ-\s]+$/i.test(inputId.value)) {
+    errorMessageInput.textContent = "";
+    return true;
+  }
+  errorMessageInput.textContent =
+    "Saisie non valide: les chiffres et caractères spéciaux ne sont pas autorisés";
+  return false;
+};
+
+/** Lancement de la vérification de la validité de la saise du champ Prénom
  * @returns {boolean} true if valid else false
  */
 const firstNameChecker = () => {
-  const firstNameErrorMsg = document.getElementById("firstNameErrorMsg");
-  if (/^[a-záàâäãåçéèêëíìîïñóòôöõúùûüýÿæœ-\s]+$/i.test(firstName.value)) {
-    firstNameErrorMsg.textContent = "";
-    return true;
-  } else {
-    firstNameErrorMsg.textContent = "Saisie non valide";
-    return false;
-  }
+  const firstNameErrorMsgInput = document.getElementById("firstNameErrorMsg");
+  firstAndLastNameCondition(firstName, firstNameErrorMsgInput);
 };
 
-/** Vérification de la validité de la saise du champ Nom, avec affichage du message d'erreur sous l'input si non valide.
+/** Lancement de la vérification de la validité de la saise du champ Nom
  * @returns {boolean} true if valid else false
  */
 const lastNameChecker = () => {
-  const lastNameErrorMsg = document.getElementById("lastNameErrorMsg");
-  if (/^[a-záàâäãåçéèêëíìîïñóòôöõúùûüýÿæœ-\s]+$/i.test(lastName.value)) {
-    lastNameErrorMsg.textContent = "";
-    return true;
-  } else {
-    lastNameErrorMsg.textContent = "Saisie non valide";
-    return false;
-  }
+  const lastNameErrorMsgInput = document.getElementById("lastNameErrorMsg");
+  firstAndLastNameCondition(lastName, lastNameErrorMsgInput);
 };
 
 /** Vérification de la validité de la saise du champ Adresse, avec affichage du message d'erreur sous l'input si non valide.
@@ -616,10 +631,9 @@ const addressChecker = () => {
   if (/^[a-z0-9,áàâäãåçéèêëíìîïñóòôöõúùûüýÿæœ-\s]+$/i.test(address.value)) {
     addressErrorMsg.textContent = "";
     return true;
-  } else {
-    addressErrorMsg.textContent = "Saisie non valide";
-    return false;
   }
+  addressErrorMsg.textContent = "Saisie non valide";
+  return false;
 };
 
 /** Vérification de la validité de la saise du champ Ville, avec affichage du message d'erreur sous l'input si non valide.
@@ -630,10 +644,9 @@ const cityChecker = () => {
   if (/^[a-z0-9áàâäãåçéèêëíìîïñóòôöõúùûüýÿæœ-\s]+$/i.test(city.value)) {
     cityErrorMsg.textContent = "";
     return true;
-  } else {
-    cityErrorMsg.textContent = "Saisie non valide";
-    return false;
   }
+  cityErrorMsg.textContent = "Saisie non valide";
+  return false;
 };
 
 /** Vérification de la validité de la saise du champ Email, avec affichage du message d'erreur sous l'input si non valide.
@@ -648,28 +661,22 @@ const emailChecker = () => {
   ) {
     emailErrorMsg.textContent = "";
     return true;
-  } else {
-    emailErrorMsg.textContent = "Saisie non valide";
-    return false;
   }
+  emailErrorMsg.textContent = "Saisie non valide";
+  return false;
 };
 
 /** Récupértation du booleen généré par les fonctions de vérification.
  * @returns {boolean} true if valid else false
  */
 formValidity = () => {
-  const firstNameValidity = firstNameChecker();
-  const lastNameValidity = lastNameChecker();
-  const addressValidity = addressChecker();
-  const cityValidity = cityChecker();
-  const emailValidity = emailChecker();
-  return {
-    firstNameValidity,
-    lastNameValidity,
-    addressValidity,
-    cityValidity,
-    emailValidity,
-  };
+  return (
+    firstNameChecker() &&
+    lastNameChecker() &&
+    addressChecker() &&
+    cityChecker() &&
+    emailChecker()
+  );
 };
 
 /** Récupération des informations saisies par l'utilisateur.
@@ -690,8 +697,8 @@ const getUserData = () => {
  * @returns {array} id of cart's products
  */
 const getProductsId = (localStorageData) => {
-  let productsId = [];
-  for (let entry of localStorageData) {
+  const productsId = [];
+  for (const entry of localStorageData) {
     productsId.push(entry.id);
   }
   return productsId;
@@ -705,26 +712,18 @@ const formSubmit = (localStorageData) => {
     .querySelector(".cart__order__form")
     .addEventListener("submit", (e) => {
       e.preventDefault();
-      const {
-        firstNameValidity,
-        lastNameValidity,
-        addressValidity,
-        cityValidity,
-        emailValidity,
-      } = formValidity();
-      setOrder(
-        firstNameValidity,
-        lastNameValidity,
-        addressValidity,
-        cityValidity,
-        emailValidity,
-        localStorageData
-      );
+      const formIsValid = formValidity();
+      if (formIsValid) {
+        setOrder(localStorageData);
+      } else {
+        alert("Veuillez corriger le ou les champs non valides");
+      }
     });
 };
 
 /** Envoi de la requete API pour récupérer l'order id.
- * @param {}
+ * @param {array} localStorageData
+ * @returns {string} order id
  */
 const fetchPostOrder = async (localStorageData) => {
   const productsId = getProductsId(localStorageData);
@@ -745,28 +744,12 @@ const fetchPostOrder = async (localStorageData) => {
 };
 
 /** Vérifications de la validité des infos saisies par l'utilisateur et si tous les champs sont valides, envoi de la requête à l'API , récupération de l'order id, suppression du contenu du local storage et redirection vers la page confirmation avec ajout de l'order id dans l'url. Si non valides affichage message erreur.
+ * @param {array} localStorageData
  */
-const setOrder = async (
-  firstNameValidity,
-  lastNameValidity,
-  addressValidity,
-  cityValidity,
-  emailValidity,
-  localStorageData
-) => {
-  if (
-    firstNameValidity === true &&
-    lastNameValidity === true &&
-    addressValidity === true &&
-    cityValidity === true &&
-    emailValidity === true
-  ) {
-    const orderId = await fetchPostOrder(localStorageData);
-    // localStorage.clear();
-    location.href = `../html/confirmation.html?orderId=${orderId.orderId}`;
-  } else {
-    alert("Veuillez corriger le ou les champs non valides");
-  }
+const setOrder = async (localStorageData) => {
+  const orderId = await fetchPostOrder(localStorageData);
+  // localStorage.clear();
+  location.href = `../html/confirmation.html?orderId=${orderId.orderId}`;
 };
 
 /** Initialisation des fonctions de vérification du formulaire et de l'envoi de la commande.
