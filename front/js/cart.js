@@ -489,7 +489,6 @@ const modifyItemQuantity = (button, localStorageData, itemId, itemColor) => {
  */
 const modifyItemQuantityInit = (localStorageData) => {
   document.querySelectorAll(".itemQuantity").forEach((button) => {
-    console.log(button);
     const { itemId, itemColor } = getSelectedItemArticle(button);
     modifyItemQuantity(button, localStorageData, itemId, itemColor);
   });
@@ -729,7 +728,7 @@ const setOrder = async (
             body: JSON.stringify({ contact: userData, products: productsId }),
           }
         );
-        return (data = response.json());
+        return (data = await response.json());
       } catch (error) {
         alert(error);
       }

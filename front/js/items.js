@@ -4,7 +4,7 @@
 const fetchItems = async () => {
   try {
     const response = await fetch("http://localhost:3000/api/products");
-    return (data = response.json());
+    return (data = await response.json());
   } catch (error) {
     alert(error);
   }
