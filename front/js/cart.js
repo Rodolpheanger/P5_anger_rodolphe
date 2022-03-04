@@ -762,7 +762,7 @@ const setOrder = async (
     emailValidity === true
   ) {
     const orderId = await fetchPostOrder(localStorageData);
-    localStorage.clear();
+    // localStorage.clear();
     location.href = `../html/confirmation.html?orderId=${orderId.orderId}`;
   } else {
     alert("Veuillez corriger le ou les champs non valides");
