@@ -18,7 +18,7 @@ const fetchItemData = async () => {
     const response = await fetch(
       "http://localhost:3000/api/products/" + itemId
     );
-    return (data = await response.json());
+    return response.json();
   } catch (error) {
     alert(error);
   }
@@ -102,10 +102,14 @@ const addToCartInit = () => {
     const itemNameContainer = document.getElementById("title");
     const itemColorsContainer = document.getElementById("colors");
     const itemQuantityContainer = document.getElementById("quantity");
+    const itemQuantityContainerValue = Number.parseInt(
+      itemQuantityContainer.value
+    );
+    console.log(typeof itemQuantityContainerValue);
     checkValidity(
       itemColorsContainer.value,
       itemNameContainer.textContent,
-      itemQuantityContainer.value
+      itemQuantityContainerValue
     );
   });
 };
@@ -170,7 +174,7 @@ const createOrModifyEntry = (localStorageData, itemId, newProduct) => {
   for (let entry of localStorageData) {
     if (entry.id === itemId && entry.color === newProduct.color) {
       return (
-        (entry.quantity = newProduct.quantity),
+        (entry.quantity += newProduct.quantity),
         setLocalStorage(localStorageData)
       );
     }

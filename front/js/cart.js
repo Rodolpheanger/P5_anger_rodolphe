@@ -697,50 +697,6 @@ const getProductsId = (localStorageData) => {
   return productsId;
 };
 
-/** Vérifications de la validité des infos saisies par l'utilisateur et si tous les champs sont valides, envoi de la requête à l'API , récupération de l'order id, suppression du contenu du local storage et redirection vers la page confirmation avec ajout de l'order id dans l'url. Si non valides affichage message erreur.
- */
-const setOrder = async (
-  firstNameValidity,
-  lastNameValidity,
-  addressValidity,
-  cityValidity,
-  emailValidity,
-  productsId,
-  userData
-) => {
-  if (
-    firstNameValidity === true &&
-    lastNameValidity === true &&
-    addressValidity === true &&
-    cityValidity === true &&
-    emailValidity === true
-  ) {
-    const fetchPostOrder = async () => {
-      try {
-        const response = await fetch(
-          "http://localhost:3000/api/products/order",
-          {
-            method: "POST",
-            headers: {
-              Accept: "application/json",
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ contact: userData, products: productsId }),
-          }
-        );
-        return (data = await response.json());
-      } catch (error) {
-        alert(error);
-      }
-    };
-    const orderId = await fetchPostOrder();
-    // localStorage.clear();
-    location.href = `../html/confirmation.html?orderId=${orderId.orderId}`;
-  } else {
-    alert("Veuillez corriger le ou les champs non valides");
-  }
-};
-
 /** Mise en place du listener sur le formulaire pour l'action "submit" avec récupération du booléen de validation, des infos saisies par l'utilisateur et des id des produits du panier puis lancement de la fonction précédente.
  * @param {array} localStorageData
  */
@@ -756,18 +712,61 @@ const formSubmit = (localStorageData) => {
         cityValidity,
         emailValidity,
       } = formValidity();
-      const productsId = getProductsId(localStorageData);
-      const userData = getUserData();
       setOrder(
         firstNameValidity,
         lastNameValidity,
         addressValidity,
         cityValidity,
         emailValidity,
-        productsId,
-        userData
+        localStorageData
       );
     });
+};
+
+/** Envoi de la requete API pour récupérer l'order id.
+ * @param {}
+ */
+const fetchPostOrder = async (localStorageData) => {
+  const productsId = getProductsId(localStorageData);
+  const userData = getUserData();
+  try {
+    const response = await fetch("http://localhost:3000/api/products/order", {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ contact: userData, products: productsId }),
+    });
+    return response.json();
+  } catch (error) {
+    alert(error);
+  }
+};
+
+/** Vérifications de la validité des infos saisies par l'utilisateur et si tous les champs sont valides, envoi de la requête à l'API , récupération de l'order id, suppression du contenu du local storage et redirection vers la page confirmation avec ajout de l'order id dans l'url. Si non valides affichage message erreur.
+ */
+const setOrder = async (
+  firstNameValidity,
+  lastNameValidity,
+  addressValidity,
+  cityValidity,
+  emailValidity,
+  localStorageData
+) => {
+  if (
+    firstNameValidity === true &&
+    lastNameValidity === true &&
+    addressValidity === true &&
+    cityValidity === true &&
+    emailValidity === true
+  ) {
+    const orderId = await fetchPostOrder(localStorageData);
+    localStorage.clear();
+    location.href = `../html/confirmation.html?orderId=${orderId.orderId}`;
+  } else {
+    alert("Veuillez corriger le ou les champs non valides");
+  }
 };
 
 /** Initialisation des fonctions de vérification du formulaire et de l'envoi de la commande.
