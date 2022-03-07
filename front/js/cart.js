@@ -641,7 +641,7 @@ const cityChecker = () => {
     return true;
   }
   cityErrorMsg.textContent =
-    "Saisie non valide: saisir le code poste (5 chiffres), suivi du nom de la ville";
+    "Saisie non valide: saisir le code postal (5 chiffres), suivi du nom de la ville. Les caractères spéciaux ne sont pas autorisés";
   return false;
 };
 
