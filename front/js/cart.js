@@ -7,7 +7,9 @@
 const cartInit = async () => {
   const localStorageData = getLocalStorage();
   if (localStorageData.length === 0) {
-    alert(`Votre panier est vide, veuillez y ajouter des articles.`);
+    alert(
+      `Malheureusement votre panier est vide pour l'instant, mais vous pouvez y ajouter des articles.`
+    );
     location.href = "../html/index.html";
   } else {
     await itemsDisplay(localStorageData);
@@ -561,20 +563,9 @@ const deleteItemInit = (localStorageData) => {
 //------------------------------------------------------------------------------------
 
 /** Mise en place d'un listener sur les inputs du formulaire pour vérifier la validité de la saisie
+ * @returns {boolean} true if valid else false
  */
 const formChecker = () => {
-  // ********************* Voir si possible de concaténer un nom de fonction ***********************
-  // const inputsId = [firstName, lastName, address, city, email];
-  // for (const element of inputsId) {
-  //   console.log(element.id);
-  //   let checkFunction = element.id + "Checker";
-  //   console.log(checkFunction);
-  //   element.addEventListener("input", () => {
-  //     checkFunction();
-  //     // eval(element.id + "Checker")();
-  //   });
-  // }
-
   firstName.addEventListener("input", () => {
     firstNameChecker();
   });
@@ -598,6 +589,7 @@ const formChecker = () => {
  * @returns {boolean} true if valid else false
  */
 const firstAndLastNameCondition = (inputId, errorMessageInput) => {
+  /*RegEx prénom, nom: accepte lettres majuscules, minuscules, les caractères accentués, le tiret et l'espace */
   if (/^[a-záàâäãåçéèêëíìîïñóòôöõúùûüýÿæœ-\s]+$/i.test(inputId.value)) {
     errorMessageInput.textContent = "";
     return true;
@@ -612,7 +604,7 @@ const firstAndLastNameCondition = (inputId, errorMessageInput) => {
  */
 const firstNameChecker = () => {
   const firstNameErrorMsgInput = document.getElementById("firstNameErrorMsg");
-  firstAndLastNameCondition(firstName, firstNameErrorMsgInput);
+  return firstAndLastNameCondition(firstName, firstNameErrorMsgInput);
 };
 
 /** Lancement de la vérification de la validité de la saise du champ Nom
@@ -620,7 +612,7 @@ const firstNameChecker = () => {
  */
 const lastNameChecker = () => {
   const lastNameErrorMsgInput = document.getElementById("lastNameErrorMsg");
-  firstAndLastNameCondition(lastName, lastNameErrorMsgInput);
+  return firstAndLastNameCondition(lastName, lastNameErrorMsgInput);
 };
 
 /** Vérification de la validité de la saise du champ Adresse, avec affichage du message d'erreur sous l'input si non valide.
@@ -628,11 +620,13 @@ const lastNameChecker = () => {
  */
 const addressChecker = () => {
   const addressErrorMsg = document.getElementById("addressErrorMsg");
+  /*RegEx addresse: accepte lettres majuscules, minuscules,les chiffres, les caractères accentués, le tiret, la virgule et l'espace */
   if (/^[a-z0-9,áàâäãåçéèêëíìîïñóòôöõúùûüýÿæœ-\s]+$/i.test(address.value)) {
     addressErrorMsg.textContent = "";
     return true;
   }
-  addressErrorMsg.textContent = "Saisie non valide";
+  addressErrorMsg.textContent =
+    "Saisie non valide: les caractères spéciaux ne sont pas autorisés";
   return false;
 };
 
@@ -640,12 +634,14 @@ const addressChecker = () => {
  * @returns {boolean} true if valid else false
  */
 const cityChecker = () => {
+  /*RegEx ville: commence par le code postale à 5 chiffres puis un espace puis accepte les lettres majuscules, minuscules, les caractères accentués, le tiret et l'espace */
   const cityErrorMsg = document.getElementById("cityErrorMsg");
-  if (/^[a-z0-9áàâäãåçéèêëíìîïñóòôöõúùûüýÿæœ-\s]+$/i.test(city.value)) {
+  if (/^[0-9]{5}\s[a-záàâäãåçéèêëíìîïñóòôöõúùûüýÿæœ\-\s]+$/i.test(city.value)) {
     cityErrorMsg.textContent = "";
     return true;
   }
-  cityErrorMsg.textContent = "Saisie non valide";
+  cityErrorMsg.textContent =
+    "Saisie non valide: saisir le code poste (5 chiffres), suivi du nom de la ville";
   return false;
 };
 
@@ -655,21 +651,22 @@ const cityChecker = () => {
 const emailChecker = () => {
   const emailErrorMsg = document.getElementById("emailErrorMsg");
   if (
-    /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,4}))$/i.test(
+    /*RegEx email: la partie locale accepte n'importe quel caractère (quantité: minimum 1 et sans limite) sauf <>()[\]\\.,;:\s@\", puis il peut y avoir un point qui sépare une autre suite de caractères qui reprend les mêmes caractèristiques et ainsi de suite jusqu'à l'arobase |OU| si la partie locale est entourée de guillements, accepte n'importe quel caractère à l'intèrieur de ces guillements. Après l'arobase, une addresse ip |OU| un nom de domaine qui accepte lettres, chiffres, tiret et caractères accentués suivi d'un point (peut se répéter plusieurs fois), puis le domaine composé de lettres (minimum 2 et sans limite) */
+    /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@(([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})|(([a-z\-0-9áàâäãåçéèêëíìîïñóòôöõúùûüýÿæœ]+\.)+[a-z]{2,}))$/i.test(
       email.value
     )
   ) {
     emailErrorMsg.textContent = "";
     return true;
   }
-  emailErrorMsg.textContent = "Saisie non valide";
+  emailErrorMsg.textContent = "Format Email non valide";
   return false;
 };
 
-/** Récupértation du booleen généré par les fonctions de vérification.
+/** Récupération du booleen généré par les fonctions de vérification.
  * @returns {boolean} true if valid else false
  */
-formValidity = () => {
+const formValidity = () => {
   return (
     firstNameChecker() &&
     lastNameChecker() &&
@@ -748,7 +745,7 @@ const fetchPostOrder = async (localStorageData) => {
  */
 const setOrder = async (localStorageData) => {
   const orderId = await fetchPostOrder(localStorageData);
-  // localStorage.clear();
+  localStorage.clear();
   location.href = `../html/confirmation.html?orderId=${orderId.orderId}`;
 };
 
