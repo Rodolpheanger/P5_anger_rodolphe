@@ -13,11 +13,11 @@ const cartInit = async () => {
     location.href = "../html/index.html";
   } else {
     await itemsDisplay(localStorageData);
-    setOrderInit(localStorageData);
     totalItemsQuantityDisplay(localStorageData);
     totalItemsPriceDisplay(localStorageData);
     modifyItemQuantityInit(localStorageData);
     deleteItemInit(localStorageData);
+    setOrderInit(localStorageData);
   }
 };
 
@@ -251,6 +251,7 @@ const itemQuantityInputDisplay = (itemDataQuantity) => {
   itemQuantityInput.setAttribute("value", itemDataQuantity);
   return itemQuantityInput;
 };
+
 /** Création de la div qui contient le button "supprimer" et ajout de celui-ci à l'interieur.
  * @param {HTMLElement} itemContentSettingsDeleteButton
  * @returns {HTMLElement} div
@@ -268,7 +269,9 @@ const createItemContentSettingsDeleteContainer = (
   return divItemContentSettingsDeleteContainer;
 };
 
-/** Création pour affichage du button "supprimer" */
+/** Création pour affichage du button "supprimer"
+ * @returns {HTMLElement} p
+ */
 const itemContentSettingsDeleteButtonDisplay = () => {
   const itemContentSettingsDeleteButton = document.createElement("p");
   itemContentSettingsDeleteButton.classList.add("deleteItem");
@@ -282,7 +285,6 @@ const itemContentSettingsDeleteButtonDisplay = () => {
  * @param {string} itemData
  * @returns {HTMLElements}
  */
-
 const itemDisplay = (entry, itemId, itemData) => {
   const itemQuantityPreText = itemQuantityPreTextDisplay();
   const itemQuantityInput = itemQuantityInputDisplay(entry.quantity);
@@ -338,7 +340,7 @@ const itemsDisplay = async (localStorageData) => {
 //                    Affichage quantité total d'article du panier
 //------------------------------------------------------------------------------------
 
-/** Push de la quantité définie pour chaque item du panier dans le tableau en la convertissant en "number".
+/** Push de la quantité définie pour chaque item du panier dans un tableau en la convertissant en "number".
  * @param {string} itemQuantityArray
  * @param {string} itemDataQuantity
  * @returns {array} contain all the items individual quantity
@@ -513,6 +515,11 @@ const itemQuantitySetAtZero = (button, localStorageData) => {
   }
 };
 
+/** Remet la quantité affichée dans l'input à la valeur contenue dans le local storage (cas des quantités saisies non autorisées).
+ * @param {array} localStorageData
+ * @param {HTMLElement} button
+ * @return {number} entry.quantity display in quantity input
+ */
 const setQuantityToLocalStorageValue = (localStorageData, button) => {
   for (const entry of localStorageData) {
     button.value = entry.quantity;
@@ -671,9 +678,13 @@ const addressChecker = () => {
  * @returns {boolean} true if valid else false
  */
 const cityChecker = () => {
-  /*RegEx ville: commence par le code postale à 5 chiffres puis un espace puis accepte les lettres majuscules, minuscules, les caractères accentués, le tiret et l'espace */
+  /*RegEx ville: commence par le code postale à 5 chiffres puis un espace puis accepte les lettres, les caractères accentués, le tiret et l'espace, puis accepte éventuellement un espace suivi de 1 à 5 chiffres */
   const cityErrorMsg = document.getElementById("cityErrorMsg");
-  if (/^[0-9]{5}\s[a-záàâäãåçéèêëíìîïñóòôöõúùûüýÿæœ\-\s]+$/i.test(city.value)) {
+  if (
+    /^[0-9]{5}\s[a-záàâäãåçéèêëíìîïñóòôöõúùûüýÿæœ\-\s]+(\s[0-9]{1,5})*$/i.test(
+      city.value
+    )
+  ) {
     cityErrorMsg.textContent = "";
     return true;
   }
@@ -689,7 +700,7 @@ const emailChecker = () => {
   const emailErrorMsg = document.getElementById("emailErrorMsg");
   if (
     /*RegEx email: la partie locale accepte n'importe quel caractère (quantité: minimum 1 et sans limite) sauf <>()[\]\\.,;:\s@\", puis il peut y avoir un point qui sépare une autre suite de caractères qui reprend les mêmes caractèristiques et ainsi de suite jusqu'à l'arobase |OU| si la partie locale est entourée de guillements, accepte n'importe quel caractère à l'intèrieur de ces guillements. Après l'arobase, une addresse ip |OU| un nom de domaine qui accepte lettres, chiffres, tiret et caractères accentués suivi d'un point (peut se répéter plusieurs fois), puis le domaine composé de lettres (minimum 2 et sans limite) */
-    /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@(([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})|(([a-z\-0-9áàâäãåçéèêëíìîïñóòôöõúùûüýÿæœ]+\.)+[a-z]{2,}))$/i.test(
+    /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@(([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})|(([a-z0-9\-áàâäãåçéèêëíìîïñóòôöõúùûüýÿæœ]+\.)+[a-z]{2,}))$/i.test(
       email.value
     )
   ) {
