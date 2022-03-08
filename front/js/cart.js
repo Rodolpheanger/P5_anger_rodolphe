@@ -327,7 +327,7 @@ const itemDisplay = (entry, itemId, itemData) => {
  * @param {object} localStorageData
  */
 const itemsDisplay = async (localStorageData) => {
-  for (let entry of localStorageData) {
+  for (const entry of localStorageData) {
     const itemId = getItemId(entry.id);
     const itemData = await fetchItemData(itemId);
     itemDisplay(entry, itemId, itemData);
@@ -365,7 +365,7 @@ const calculateTotalItemsQuantity = (itemQuantityArray) => {
  */
 const totalItemsQuantityDisplay = (localStorageData) => {
   let itemQuantityArray = [];
-  for (let entry of localStorageData) {
+  for (const entry of localStorageData) {
     itemQuantityArray = pushInEmptyItemQuantityArray(
       itemQuantityArray,
       entry.quantity
@@ -425,7 +425,7 @@ const totalPriceDisplay = (itemsTotalPrice) => {
  */
 const totalItemsPriceDisplay = async (localStorageData) => {
   let itemsTotalPriceArray = [];
-  for (let entry of localStorageData) {
+  for (const entry of localStorageData) {
     const itemId = getItemId(entry.id);
     const itemData = await fetchItemData(itemId);
     const totalPriceByItem = calculateTotalPriceByItem(
@@ -461,7 +461,7 @@ const getSelectedItemArticle = (button) => {
 // Modification quantité d'un article
 //------------------------------------
 
-/** Modifiaction de la quantité d'un article par l'utilisateur avec mise à jour du nombre total d'articles, du montant total du panier et du local storage.
+/** Modification de la quantité d'un article par l'utilisateur avec mise à jour du nombre total d'articles, du montant total du panier et du local storage. Si quantité saisie manuellement à 0, affichage d'un message d'erreur et recopie,dans l'input, de la quantité présente dans le local storage.
  * @param {HTMLElement} button
  * @param {object} localStorageData
  * @param {string} itemId
@@ -471,16 +471,53 @@ const getSelectedItemArticle = (button) => {
  * @returns {HTMLElement} span new items total price
  */
 const modifyItemQuantity = (button, localStorageData, itemId, itemColor) => {
-  button.addEventListener("input", () => {
-    for (let entry of localStorageData) {
-      if (entry.id === itemId && entry.color === itemColor) {
-        entry.quantity = button.value;
-        setLocalStorage(localStorageData);
-        totalItemsQuantityDisplay(localStorageData);
-        totalItemsPriceDisplay(localStorageData);
-      }
-    }
+  button.addEventListener("change", () => {
+    itemQuantitySetAtZero(button, localStorageData);
+    setNewItemQuantity(localStorageData, itemId, itemColor, button);
   });
+};
+
+/** Mise à jour de la quantité affichée, du local storage, de la quantité total d'articles et du montant total du panier suite à modification par l'ultilisateur.
+ * @param {HTMLElement} button
+ * @param {object} localStorageData
+ * @param {string} itemId
+ * @param {string} itemColor
+ * @returns {object} updated local storage
+ * @returns {HTMLElement} span new items total quantity
+ * @returns {HTMLElement} span new items total price
+ */
+const setNewItemQuantity = (localStorageData, itemId, itemColor, button) => {
+  for (const entry of localStorageData) {
+    if (entry.id === itemId && entry.color === itemColor && button.value > 0) {
+      entry.quantity = Number.parseInt(button.value);
+      setLocalStorage(localStorageData);
+      totalItemsQuantityDisplay(localStorageData);
+      totalItemsPriceDisplay(localStorageData);
+    }
+  }
+};
+
+/** Affichage message d'erreur si quantité saisie manuellement à 0 par l'utilisateur avec recopie, dans l'input, de la quantité présente dans le local storage.
+ * @param {HTMLElement} button
+ * @param {object} localStorageData
+ */
+const itemQuantitySetAtZero = (button, localStorageData) => {
+  if (button.value == 0) {
+    alert(
+      'La quantité minimum autorisée est de 1. Si vous souhaitez supprimer cet article, merci de cliquer sur "Supprimer"'
+    );
+    setQuantityToLocalStorageValue(localStorageData, button);
+  } else if (button.value > 100) {
+    alert("La quantité maximum autorisée est de 100.");
+    setQuantityToLocalStorageValue(localStorageData, button);
+  }
+};
+
+const setQuantityToLocalStorageValue = (localStorageData, button) => {
+  for (const entry of localStorageData) {
+    button.value = entry.quantity;
+    return;
+  }
 };
 
 /** Initialisation de la modification de la quantité d'un article par l'utilisateur.
@@ -500,7 +537,7 @@ const modifyItemQuantityInit = (localStorageData) => {
 //Suppression d'un article
 //-------------------------
 
-/** Suppression d'un article par l'utilisateur avec mise à jour quantité et prix total du panier
+/** Suppression d'un article par l'utilisateur avec mise à jour quantité et prix total du panier.
  * @param {HTMLElement} button
  * @param {object} localStorageData
  * @param {string} itemId
@@ -509,7 +546,7 @@ const modifyItemQuantityInit = (localStorageData) => {
  */
 const deleteItem = (button, localStorageData, itemId, itemColor) => {
   button.addEventListener("click", () => {
-    for (let entry of localStorageData) {
+    for (const entry of localStorageData) {
       if (entry.id === itemId && entry.color === itemColor) {
         if (
           confirm(

@@ -15,7 +15,7 @@ const fetchItems = async () => {
  */
 const itemsDisplay = async () => {
   const itemsData = await fetchItems();
-  for (let item of itemsData) {
+  for (const item of itemsData) {
     const image = itemImageDisplay(item.imageUrl, item.altTxt);
     const nameOfItem = itemNameDisplay(item.name);
     const description = itemDescriptionDisplay(item.description);

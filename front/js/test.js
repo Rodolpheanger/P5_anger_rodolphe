@@ -51,7 +51,7 @@
 /** fonction qui crée les cards et les affiche dans la section avec id items (methode innerHTML)*/
 // const createAllItems = async () => {
 //   await fetchItems();
-//   for (let item of itemsData) {
+//   for (const item of itemsData) {
 //     itemsContainer.innerHTML += `
 //         <a href="./product.html?id=${item._id}">
 //            <article>
@@ -75,7 +75,7 @@
 // const createAllItems = async () => {
 //   const itemsData = await fetchItems();
 
-//   for (let item of itemsData) {
+//   for (const item of itemsData) {
 //     let link = document.createElement("a");
 //     let article = document.createElement("article");
 //     let img = document.createElement("img");
@@ -117,7 +117,7 @@
 //   itemPriceContainer.textContent = item.price;
 //   itemDescriptionContainer.textContent = item.description;
 
-//   for (let color of item.colors) {
+//   for (const color of item.colors) {
 //     let colorOption = new Option(color, color);
 
 //     // let colorOption = document.createElement("option");

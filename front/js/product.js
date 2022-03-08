@@ -86,7 +86,7 @@ const itemDescriptionDisplay = (itemDescription) => {
  * @returns {HTMLElement} option
  */
 const itemColorsDisplay = (itemColors) => {
-  for (let color of itemColors) {
+  for (const color of itemColors) {
     let colorOption = new Option(color, color);
     document.getElementById("colors").appendChild(colorOption);
   }
@@ -113,7 +113,7 @@ const addToCartInit = () => {
   });
 };
 
-/** Vérification de la séléction d'une couleur et d'une quantité par l'utilisateur avant ajout au panier:
+/** Vérification de la séléction d'une couleur et d'une quantité entre 1 et 100 par l'utilisateur avant ajout au panier:
  * - si non ok: renvoi un message d'alerte.
  * - si ok: lance l'ajout au panier et l'affichage du message de validation.
  * @param {string} itemColor
@@ -121,14 +121,33 @@ const addToCartInit = () => {
  * @param {number} itemQuantity
  */
 const checkValidity = (itemColor, itemName, itemQuantity) => {
+  const itemId = getItemId();
+  const localStorageData = getLocalStorage(itemId, itemColor);
+  for (const entry of localStorageData) {
+    if (
+      entry.id === itemId &&
+      entry.color === itemColor &&
+      entry.quantity + itemQuantity > 100
+    ) {
+      const maxToAdd = 100 - entry.quantity;
+      alert(
+        `Vous dépassez le nombre maximum de ${itemName} ${itemColor} que vous pouvez avoir dans votre panier (ajout maximum possible ${maxToAdd})`
+      );
+      return;
+    }
+  }
   if (itemColor == "") {
-    alert(`Veuillez séléctionner une couleur pour votre "${itemName}"`);
+    alert(`Veuillez séléctionner une couleur pour votre ${itemName}`);
   } else if (itemQuantity == 0) {
     alert(
-      `Veuillez indiquer le nombre de "${itemName}" que vous souhaitez ajouter au panier`
+      `Veuillez indiquer le nombre de ${itemName} que vous souhaitez ajouter au panier`
+    );
+  } else if (itemQuantity > 100) {
+    alert(
+      `Vous dépassez le nombre maximum de ${itemName} que vous pouvez ajouter au panier (max 100)`
     );
   } else {
-    addToCart(itemColor, itemQuantity);
+    addToCart(localStorageData, itemId, itemColor, itemQuantity);
     validationMessage(itemQuantity, itemName, itemColor);
   }
 };
@@ -150,9 +169,7 @@ const getLocalStorage = () => {
  * @param {string} itemColor
  * @param {number} itemQuantity
  */
-const addToCart = (itemColor, itemQuantity) => {
-  const itemId = getItemId();
-  const localStorageData = getLocalStorage(itemId, itemColor);
+const addToCart = (localStorageData, itemId, itemColor, itemQuantity) => {
   const newProduct = {
     id: itemId,
     color: itemColor,
@@ -170,8 +187,12 @@ const addToCart = (itemColor, itemQuantity) => {
  * @returns {array} datas to set to local storage
  */
 const createOrModifyEntry = (localStorageData, itemId, newProduct) => {
-  for (let entry of localStorageData) {
-    if (entry.id === itemId && entry.color === newProduct.color) {
+  for (const entry of localStorageData) {
+    if (
+      entry.id === itemId &&
+      entry.color === newProduct.color &&
+      entry.quantity + newProduct.quantity <= 100
+    ) {
       return (
         (entry.quantity += newProduct.quantity),
         setLocalStorage(localStorageData)
@@ -216,7 +237,7 @@ const setLocalStorage = (cartData) => {
 const validationMessage = (itemQuantity, itemName, itemColor) => {
   if (
     confirm(
-      `Vous venez d'ajouter ${itemQuantity} "${itemName}" de couleur ${itemColor} à votre panier. \nCliquez sur OK pour y accéder  \nou sur ANNULER pour continuer vos achats.`
+      `Vous venez d'ajouter ${itemQuantity} ${itemName} ${itemColor} à votre panier. \nCliquez sur OK pour y accéder  \nou sur ANNULER pour continuer vos achats.`
     )
   ) {
     location.href = "../html/cart.html";
