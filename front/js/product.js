@@ -113,7 +113,7 @@ const addToCartInit = () => {
   });
 };
 
-/** Vérification de la séléction d'une couleur et d'une quantité entre 1 et 100 par l'utilisateur avant ajout au panier:
+/** Vérification de la séléction d'une couleur et d'une quantité comprise entre 1 et 100 par l'utilisateur avant ajout au panier:
  * - si non ok: renvoi un message d'alerte.
  * - si ok: lance l'ajout au panier et l'affichage du message de validation.
  * @param {string} itemColor
@@ -123,28 +123,24 @@ const addToCartInit = () => {
 const checkValidity = (itemColor, itemName, itemQuantity) => {
   const itemId = getItemId();
   const localStorageData = getLocalStorage(itemId, itemColor);
-  for (const entry of localStorageData) {
-    if (
-      entry.id === itemId &&
-      entry.color === itemColor &&
-      entry.quantity + itemQuantity > 100
-    ) {
-      const maxToAdd = 100 - entry.quantity;
-      alert(
-        `Vous dépassez le nombre maximum de ${itemName} ${itemColor} que vous pouvez avoir dans votre panier (ajout maximum possible ${maxToAdd})`
-      );
-      return;
-    }
-  }
-  if (itemColor == "") {
+  const totalCartQuantityIsOverTheMax = checkTotalCartQuantity(
+    localStorageData,
+    itemId,
+    itemColor,
+    itemQuantity,
+    itemName
+  );
+  if (totalCartQuantityIsOverTheMax) {
+    return;
+  } else if (itemColor == "") {
     alert(`Veuillez séléctionner une couleur pour votre ${itemName}`);
-  } else if (itemQuantity == 0) {
+  } else if ((itemQuantity <= 0) | isNaN(itemQuantity)) {
     alert(
-      `Veuillez indiquer le nombre de ${itemName} que vous souhaitez ajouter au panier`
+      `Veuillez indiquer le nombre de ${itemName} que vous souhaitez ajouter au panier (minimum 1 et maximum 100)`
     );
   } else if (itemQuantity > 100) {
     alert(
-      `Vous dépassez le nombre maximum de ${itemName} que vous pouvez ajouter au panier (max 100)`
+      `Vous dépassez le nombre maximum de ${itemName} que vous pouvez ajouter au panier (maximum autorisé 100)`
     );
   } else {
     addToCart(localStorageData, itemId, itemColor, itemQuantity);
@@ -161,6 +157,37 @@ const getLocalStorage = () => {
   const localStorageData =
     JSON.parse(window.localStorage.getItem("cart")) ?? [];
   return localStorageData;
+};
+
+/** Vérification si la quantité totale d'un article déjà existant à ajouter au panier va dépasser 100.
+ * Si oui: message alerte
+ * @param {array} localStorageData
+ * @param {string} itemId
+ * @param {string} itemColor
+ * @param {number} itemQuantity
+ * @param {string} itemName
+ * @returns {boolean} true
+ */
+const checkTotalCartQuantity = (
+  localStorageData,
+  itemId,
+  itemColor,
+  itemQuantity,
+  itemName
+) => {
+  for (const entry of localStorageData) {
+    if (
+      entry.id === itemId &&
+      entry.color === itemColor &&
+      entry.quantity + itemQuantity > 100
+    ) {
+      const maxToAdd = 100 - entry.quantity;
+      alert(
+        `Vous dépassez le nombre maximum de ${itemName} ${itemColor} que vous pouvez avoir dans votre panier (ajout maximum possible ${maxToAdd})`
+      );
+      return true;
+    }
+  }
 };
 
 /** Récupération de l'id du produit séléctionné et du local storage.
