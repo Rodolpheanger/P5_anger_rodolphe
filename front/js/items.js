@@ -6,7 +6,9 @@ const fetchItems = async () => {
     const response = await fetch("http://localhost:3000/api/products");
     return response.json();
   } catch (error) {
-    alert(error);
+    alert(
+      "Nous rencontrons actuellement des difficultés pour l'affichage de nos articles.\nMerci de réessayer ultèrieurement.\nVeuillez nous excuser pour la gêne occasionnée."
+    );
   }
 };
 

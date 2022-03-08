@@ -20,7 +20,10 @@ const fetchItemData = async () => {
     );
     return response.json();
   } catch (error) {
-    alert(error);
+    console.log(error);
+    alert(
+      "Nous rencontrons actuellement des difficultés pour accéder à cet article.\nMerci de réessayer ultèrieurement.\nVeuillez nous excuser pour la gêne occasionnée."
+    );
   }
 };
 

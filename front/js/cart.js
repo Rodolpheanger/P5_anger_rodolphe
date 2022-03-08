@@ -50,7 +50,10 @@ const fetchItemData = async (itemId) => {
     );
     return (data = await response.json());
   } catch (error) {
-    alert(error);
+    console.log(error);
+    alert(
+      "Nous rencontrons actuellement des difficultés pour acceder à votre panier.\nMerci de réessayer ultèrieurement.\nVeuillez nous excuser pour la gêne occasionnée."
+    );
   }
 };
 
@@ -761,7 +764,7 @@ const formSubmit = (localStorageData) => {
       if (formIsValid) {
         setOrder(localStorageData);
       } else {
-        alert("Veuillez corriger le ou les champs non valides");
+        alert(`Veuillez corriger les champs non valides du formulaire.`);
       }
     });
 };
@@ -784,7 +787,10 @@ const fetchPostOrder = async (localStorageData) => {
     });
     return response.json();
   } catch (error) {
-    alert(error);
+    console.log(error);
+    alert(
+      "Nous rencontrons actuellement des difficultés pour l'envoi de votre commande.\nMerci de réessayer ultèrieurement.\nVeuillez nous excuser pour la gêne occasionnée."
+    );
   }
 };
 
@@ -806,7 +812,7 @@ const setOrderInit = (localStorageData) => {
 };
 
 //------------------------------------------------------------------------------------
-//                                  Initialisation
+//                            Initialisation du panier
 //------------------------------------------------------------------------------------
 
 /** Lancement de l'initialisation de la page.*/
