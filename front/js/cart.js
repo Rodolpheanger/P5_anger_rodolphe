@@ -2,13 +2,13 @@
 //                          Affichage du contenu du panier
 //------------------------------------------------------------------------------------
 
-/** Affichage des items contenus dans le panier, de la quantité total et du prix total + initialisation pour la modification de quantité, la suppression de produit et l'envoi de la commande.
+/** Affichage des items contenus dans le panier, de la quantité total et du prix total + initialisation pour la modification de quantité, la suppression de produit et l'envoi de la commande. Si le panier est vide affichage d'un pop-up d'alerte avec redirection vers la page d'accueil
  */
 const cartInit = async () => {
   const localStorageData = getLocalStorage();
-  if (localStorageData.length === 0) {
+  if (localStorageData == null) {
     alert(
-      `Malheureusement votre panier est vide pour l'instant, mais vous pouvez y ajouter des articles.`
+      `Votre panier est vide pour l'instant, mais vous pouvez y ajouter des articles en visitant notre page d'acceuil.`
     );
     location.href = "../html/index.html";
   } else {
@@ -546,31 +546,60 @@ const modifyItemQuantityInit = (localStorageData) => {
 //Suppression d'un article
 //-------------------------
 
-/** Suppression d'un article par l'utilisateur avec mise à jour quantité et prix total du panier.
+/** Lancement de la suppression d'un article par l'utilisateur avec mise à jour du local storage, de la quantité et du prix total du panier. Si c'est le dernier article du panier, vide le local storage et redirige vers la page index.html
  * @param {HTMLElement} button
  * @param {object} localStorageData
  * @param {string} itemId
  * @param {string} itemColor
  * @returns {object} updated local storage
  */
-const deleteItem = (button, localStorageData, itemId, itemColor) => {
+const deleteItemLaunch = (button, localStorageData, itemId, itemColor) => {
   button.addEventListener("click", () => {
-    for (const entry of localStorageData) {
-      if (entry.id === itemId && entry.color === itemColor) {
-        if (
-          confirm(
-            `Vous allez supprimer cet article de votre panier. \nOK pour confirmer \nANNULER pour revenir au panier`
-          )
-        ) {
-          localStorageItemRemove(localStorageData, entry);
-          itemRemove(itemId, entry);
-          setLocalStorage(localStorageData);
-          totalItemsQuantityDisplay(localStorageData);
-          totalItemsPriceDisplay(localStorageData);
-        }
-      }
+    if (localStorageData.length == 1) {
+      lastItemDelete();
+    } else {
+      deleteOneItem(localStorageData, itemId, itemColor);
     }
   });
+};
+
+/** Suppression du dernier article du panier avec demande de confirmation par l'utilisateur, si validé vide le local storage et redirige vers la page index.html.
+ * @returns {object} updated local storage
+ */
+const lastItemDelete = () => {
+  if (
+    confirm(
+      `Vous êtes sur le point de supprimer le dernier article présent dans votre panier.\nEn cliquant sur OK, vous serez redirigé vers notre page d'Accueil.\nSouhaitez-vous continuer ?`
+    )
+  ) {
+    localStorage.clear();
+    location.href = "./index.html";
+  }
+  return;
+};
+
+/** Suppression d'un article du panier avec demande de confirmation par l'utilisateur, si validé met à jour le local storage, la quantité et le prix total du panier.
+ * @param {object} localStorageData
+ * @param {string} itemId
+ * @param {string} itemColor
+ * @returns {object} updated local storage
+ */
+const deleteOneItem = (localStorageData, itemId, itemColor) => {
+  for (const entry of localStorageData) {
+    if (entry.id === itemId && entry.color === itemColor) {
+      if (
+        confirm(
+          `Vous allez supprimer cet article de votre panier. \nSouhaitez-vous continuer ?`
+        )
+      ) {
+        localStorageItemRemove(localStorageData, entry);
+        itemRemove(itemId, entry);
+        setLocalStorage(localStorageData);
+        totalItemsQuantityDisplay(localStorageData);
+        totalItemsPriceDisplay(localStorageData);
+      }
+    }
+  }
 };
 
 /** Supprime l'objet de l'article du panier que l'utilisateur veut supprimer dans le local storage
@@ -600,7 +629,7 @@ const itemRemove = (itemId, entry) => {
 const deleteItemInit = (localStorageData) => {
   document.querySelectorAll(".deleteItem").forEach((button) => {
     const { itemId, itemColor } = getSelectedItemArticle(button);
-    deleteItem(button, localStorageData, itemId, itemColor);
+    deleteItemLaunch(button, localStorageData, itemId, itemColor);
   });
 };
 
@@ -701,8 +730,8 @@ const cityChecker = () => {
 const emailChecker = () => {
   const emailErrorMsg = document.getElementById("emailErrorMsg");
   if (
-    /*RegEx email: la partie locale accepte n'importe quel caractère (quantité: minimum 1 et sans limite) sauf <>()[\]\\.,;:\s@\", puis il peut y avoir un point qui sépare une autre suite de caractères qui reprend les mêmes caractèristiques et ainsi de suite jusqu'à l'arobase |OU| si la partie locale est entourée de guillements, accepte n'importe quel caractère à l'intèrieur de ces guillements. Après l'arobase, une addresse ip |OU| un nom de domaine qui accepte lettres, chiffres, tiret et caractères accentués suivi d'un point (peut se répéter plusieurs fois), puis le domaine composé de lettres (minimum 2 et sans limite) */
-    /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@(([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})|(([a-z0-9\-áàâäãåçéèêëíìîïñóòôöõúùûüýÿæœ]+\.)+[a-z]{2,}))$/i.test(
+    /*RegEx email: la partie locale accepte n'importe quel caractère (quantité: minimum 1 et sans limite) sauf <>()[\]\\.,;:\s@\", puis il peut y avoir un point qui sépare une autre suite de caractères qui reprend les mêmes caractèristiques et ainsi de suite jusqu'à l'arobase. Après l'arobase, une addresse ip |OU| un nom de domaine qui accepte lettres, chiffres, tiret et caractères accentués suivi d'un point (peut se répéter plusieurs fois), puis le domaine composé de lettres (minimum 2 et sans limite) */
+    /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*))@(([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})|(([a-z0-9\-áàâäãåçéèêëíìîïñóòôöõúùûüýÿæœ]+\.)+[a-z]{2,}))$/i.test(
       email.value
     )
   ) {

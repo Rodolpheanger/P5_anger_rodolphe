@@ -126,14 +126,14 @@ const addToCartInit = () => {
 const checkValidity = (itemColor, itemName, itemQuantity) => {
   const itemId = getItemId();
   const localStorageData = getLocalStorage(itemId, itemColor);
-  const totalCartQuantityIsOverTheMax = checkTotalCartQuantity(
+  const totalItemQuantityIsOverTheMax = checkTotalCartQuantity(
     localStorageData,
     itemId,
     itemColor,
     itemQuantity,
     itemName
   );
-  if (totalCartQuantityIsOverTheMax) {
+  if (totalItemQuantityIsOverTheMax) {
     return;
   } else if (itemColor == "") {
     alert(`Veuillez séléctionner une couleur pour votre ${itemName}`);
