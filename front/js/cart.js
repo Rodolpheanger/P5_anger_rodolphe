@@ -106,7 +106,7 @@ const createItemImageContainer = (cartItemImage) => {
   return divImage;
 };
 
-/** Création pour affichage de l'image de l'item.
+/** Création, pour affichage, de l'image de l'item.
  * @param {string} itemImageUrl
  * @param {string} itemAltTxt
  * @returns {HTMLElement} img
@@ -155,7 +155,7 @@ const createItemContentDescriptionContainer = (
   return divItemContentDescriptionContainer;
 };
 
-/** Création pour affichage du nom de l'item:
+/** Création, pour affichage, du nom de l'item:
  * @param {string} itemDataName
  * @returns {HTMLElement} h2
  * @returns {string} name of item
@@ -166,7 +166,7 @@ const itemNameDisplay = (itemDataName) => {
   return cartItemName;
 };
 
-/** Création pour affichage de la couleur de l'item:
+/** Création, pour affichage, de la couleur de l'item:
  * @param {string} itemDataColor
  * @returns {HTMLElement} p
  * @returns {string} color of item
@@ -177,7 +177,7 @@ const itemColorDisplay = (itemDataColor) => {
   return cartItemColor;
 };
 
-/** Création pour affichage du prix de l'item
+/** Création, pour affichage, du prix de l'item
  * @param {string} itemDataPrice
  * @returns {HTMLElement} p
  * @returns {string} price of item
@@ -229,7 +229,7 @@ const createItemContentSettingsQuantityContainer = (
   return divItemContentSettingsQuantityContainer;
 };
 
-/** Création pour affichage du pré-texte pour la quantité de l'item.
+/** Création, pour affichage, du pré-texte pour la quantité de l'item.
  * @returns {HTMLElement} p
  * @returns {String} "Qté : "
  */
@@ -239,7 +239,7 @@ const itemQuantityPreTextDisplay = () => {
   return preTextItemQuantity;
 };
 
-/** Création pour affichage de l'input pour la quantité de l'item.
+/** Création, pour affichage, de l'input pour la quantité de l'item.
  * @param {string} itemDataQuantity
  * @returns {HTMLElement} input
  */
@@ -271,7 +271,7 @@ const createItemContentSettingsDeleteContainer = (
   return divItemContentSettingsDeleteContainer;
 };
 
-/** Création pour affichage du button "supprimer"
+/** Création, pour affichage, du button "supprimer"
  * @returns {HTMLElement} p
  */
 const itemContentSettingsDeleteButtonDisplay = () => {
@@ -281,7 +281,7 @@ const itemContentSettingsDeleteButtonDisplay = () => {
   return itemContentSettingsDeleteButton;
 };
 
-/** Création pour affichage des items du panier
+/** Création, pour affichage, des items du panier
  * @param {object} entry
  * @param {string} itemId
  * @param {string} itemData
@@ -476,7 +476,8 @@ const getSelectedItemArticle = (button) => {
  */
 const modifyItemQuantity = (button, localStorageData, itemId, itemColor) => {
   button.addEventListener("change", () => {
-    itemQuantitySetAtZero(button, localStorageData);
+    console.log(button);
+    invalidItemQuantity(button, localStorageData);
     setNewItemQuantity(localStorageData, itemId, itemColor, button);
   });
 };
@@ -495,6 +496,7 @@ const setNewItemQuantity = (localStorageData, itemId, itemColor, button) => {
     if (entry.id === itemId && entry.color === itemColor && button.value > 0) {
       entry.quantity = Number.parseInt(button.value);
       setLocalStorage(localStorageData);
+      button.setAttribute("value", entry.quantity);
       totalItemsQuantityDisplay(localStorageData);
       totalItemsPriceDisplay(localStorageData);
     }
@@ -505,16 +507,18 @@ const setNewItemQuantity = (localStorageData, itemId, itemColor, button) => {
  * @param {HTMLElement} button
  * @param {object} localStorageData
  */
-const itemQuantitySetAtZero = (button, localStorageData) => {
+const invalidItemQuantity = (button) => {
+  console.log(button);
   if (button.value == 0) {
     alert(
       'La quantité minimum autorisée est de 1. Si vous souhaitez supprimer cet article, merci de cliquer sur "Supprimer"'
     );
-    setQuantityToLocalStorageValue(localStorageData, button);
+    setQuantityToLocalStorageValue(button);
   } else if (button.value > 100) {
     alert("La quantité maximum autorisée est de 100.");
-    setQuantityToLocalStorageValue(localStorageData, button);
+    setQuantityToLocalStorageValue(button);
   }
+  return;
 };
 
 /** Remet la quantité affichée dans l'input à la valeur contenue dans le local storage (cas des quantités saisies non autorisées).
@@ -522,11 +526,10 @@ const itemQuantitySetAtZero = (button, localStorageData) => {
  * @param {HTMLElement} button
  * @return {number} entry.quantity display in quantity input
  */
-const setQuantityToLocalStorageValue = (localStorageData, button) => {
-  for (const entry of localStorageData) {
-    button.value = entry.quantity;
-    return;
-  }
+const setQuantityToLocalStorageValue = (button) => {
+  console.log(button);
+  button.value = button.getAttribute("value");
+  return;
 };
 
 /** Initialisation de la modification de la quantité d'un article par l'utilisateur.
