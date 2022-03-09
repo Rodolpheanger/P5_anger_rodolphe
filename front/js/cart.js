@@ -25,8 +25,7 @@ const cartInit = async () => {
  * @returns {array} array of products in local storage
  */
 const getLocalStorage = () => {
-  const localStorageData =
-    JSON.parse(window.localStorage.getItem("cart")) ?? [];
+  const localStorageData = JSON.parse(window.localStorage.getItem("cart"));
   return localStorageData;
 };
 
@@ -636,8 +635,8 @@ const formChecker = () => {
  * @returns {boolean} true if valid else false
  */
 const firstAndLastNameCondition = (inputId, errorMessageInput) => {
-  /*RegEx prénom, nom: accepte lettres majuscules, minuscules, les caractères accentués, le tiret et l'espace */
-  if (/^[a-záàâäãåçéèêëíìîïñóòôöõúùûüýÿæœ-\s]+$/i.test(inputId.value)) {
+  /*RegEx prénom, nom: accepte lettres majuscules, minuscules, les caractères accentués, l'apostrophe, le tiret et l'espace */
+  if (/^[a-záàâäãåçéèêëíìîïñóòôöõúùûüýÿæœ'-\s]+$/i.test(inputId.value)) {
     errorMessageInput.textContent = "";
     return true;
   }
@@ -667,8 +666,8 @@ const lastNameChecker = () => {
  */
 const addressChecker = () => {
   const addressErrorMsg = document.getElementById("addressErrorMsg");
-  /*RegEx addresse: accepte lettres majuscules, minuscules,les chiffres, les caractères accentués, le tiret, la virgule et l'espace */
-  if (/^[a-z0-9,áàâäãåçéèêëíìîïñóòôöõúùûüýÿæœ-\s]+$/i.test(address.value)) {
+  /*RegEx addresse: accepte lettres majuscules, minuscules,les chiffres, les caractères accentués, le tiret, la virgule, l'apostrophe et l'espace */
+  if (/^[a-z0-9áàâäãåçéèêëíìîïñóòôöõúùûüýÿæœ,'-\s]+$/i.test(address.value)) {
     addressErrorMsg.textContent = "";
     return true;
   }
@@ -681,10 +680,10 @@ const addressChecker = () => {
  * @returns {boolean} true if valid else false
  */
 const cityChecker = () => {
-  /*RegEx ville: commence par le code postale à 5 chiffres puis un espace puis accepte les lettres, les caractères accentués, le tiret et l'espace, puis accepte éventuellement un espace suivi de 1 à 5 chiffres */
+  /*RegEx ville: commence par le code postale à 5 chiffres puis un espace puis accepte les lettres, les caractères accentués, l'apostrophe, le tiret et l'espace, puis accepte éventuellement un espace suivi de 1 à 5 chiffres */
   const cityErrorMsg = document.getElementById("cityErrorMsg");
   if (
-    /^[0-9]{5}\s[a-záàâäãåçéèêëíìîïñóòôöõúùûüýÿæœ\-\s]+(\s[0-9]{1,5})*$/i.test(
+    /^[0-9]{5}\s[a-záàâäãåçéèêëíìîïñóòôöõúùûüýÿæœ'-\s]+(\s[0-9]{1,5})*$/i.test(
       city.value
     )
   ) {

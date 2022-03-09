@@ -157,9 +157,13 @@ const checkValidity = (itemColor, itemName, itemQuantity) => {
  * @returns {array} local storage content
  */
 const getLocalStorage = () => {
-  const localStorageData =
-    JSON.parse(window.localStorage.getItem("cart")) ?? [];
-  return localStorageData;
+  let localStorageData = JSON.parse(window.localStorage.getItem("cart"));
+  console.log(localStorageData);
+  if (localStorageData == null) {
+    return (localStorageData = []);
+  } else {
+    return localStorageData;
+  }
 };
 
 /** Vérification si la quantité totale d'un article déjà existant à ajouter au panier va dépasser 100.
