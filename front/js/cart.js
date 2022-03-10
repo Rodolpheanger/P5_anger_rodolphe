@@ -695,7 +695,7 @@ const lastNameChecker = () => {
  */
 const addressChecker = () => {
   const addressErrorMsg = document.getElementById("addressErrorMsg");
-  /*RegEx addresse: accepte lettres majuscules, minuscules,les chiffres, les caractères accentués, le tiret, la virgule, l'apostrophe et l'espace */
+  /*RegEx addresse: accepte lettres majuscules, minuscules,les chiffres, les caractères accentués, le tiret, la virgule, l'apostrophe et l'espace. */
   if (/^[a-z0-9áàâäãåçéèêëíìîïñóòôöõúùûüýÿæœ,'-\s]+$/i.test(address.value)) {
     addressErrorMsg.textContent = "";
     return true;
@@ -709,12 +709,10 @@ const addressChecker = () => {
  * @returns {boolean} true if valid else false
  */
 const cityChecker = () => {
-  /*RegEx ville: commence par le code postale à 5 chiffres puis un espace puis accepte les lettres, les caractères accentués, l'apostrophe, le tiret et l'espace, puis accepte éventuellement un espace suivi de 1 à 5 chiffres */
+  /*RegEx ville: commence par le code postale à 5 chiffres puis un espace puis accepte les lettres, les chiffres, les caractères accentués, l'apostrophe, le tiret et l'espace. */
   const cityErrorMsg = document.getElementById("cityErrorMsg");
   if (
-    /^[0-9]{5}\s[a-záàâäãåçéèêëíìîïñóòôöõúùûüýÿæœ'-\s]+(\s[0-9]{1,5})*$/i.test(
-      city.value
-    )
+    /^[0-9]{5}\s[a-z0-9áàâäãåçéèêëíìîïñóòôöõúùûüýÿæœ'-\s]+$/i.test(city.value)
   ) {
     cityErrorMsg.textContent = "";
     return true;
@@ -731,7 +729,7 @@ const emailChecker = () => {
   const emailErrorMsg = document.getElementById("emailErrorMsg");
   if (
     /*RegEx email: la partie locale accepte n'importe quel caractère (quantité: minimum 1 et sans limite) sauf <>()[\]\\.,;:\s@\", puis il peut y avoir un point qui sépare une autre suite de caractères qui reprend les mêmes caractèristiques et ainsi de suite jusqu'à l'arobase. Après l'arobase, une addresse ip |OU| un nom de domaine qui accepte lettres, chiffres, tiret et caractères accentués suivi d'un point (peut se répéter plusieurs fois), puis le domaine composé de lettres (minimum 2 et sans limite) */
-    /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*))@(([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})|(([a-z0-9\-áàâäãåçéèêëíìîïñóòôöõúùûüýÿæœ]+\.)+[a-z]{2,}))$/i.test(
+    /^(([^<>()[\]\\.,;:@\"\s]+(\.[^<>()[\]\\.,;:@\"\s]+)*))@(([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})|(([a-z0-9\-áàâäãåçéèêëíìîïñóòôöõúùûüýÿæœ]+\.)+[a-z]{2,}))$/i.test(
       email.value
     )
   ) {
@@ -792,7 +790,7 @@ const formSubmit = (localStorageData) => {
       if (formIsValid) {
         setOrder(localStorageData);
       } else {
-        alert(`Veuillez corriger les champs non valides du formulaire.`);
+        alert(`Veuillez corriger le(s) champ(s) non valide(s) du formulaire.`);
       }
     });
 };
