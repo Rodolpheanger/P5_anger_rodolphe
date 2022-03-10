@@ -476,7 +476,6 @@ const getSelectedItemArticle = (button) => {
  */
 const modifyItemQuantity = (button, localStorageData, itemId, itemColor) => {
   button.addEventListener("change", () => {
-    console.log(button);
     invalidItemQuantity(button, localStorageData);
     setNewItemQuantity(localStorageData, itemId, itemColor, button);
   });
@@ -508,7 +507,6 @@ const setNewItemQuantity = (localStorageData, itemId, itemColor, button) => {
  * @param {object} localStorageData
  */
 const invalidItemQuantity = (button) => {
-  console.log(button);
   if (button.value == 0) {
     alert(
       'La quantité minimum autorisée est de 1. Si vous souhaitez supprimer cet article, merci de cliquer sur "Supprimer"'
@@ -527,7 +525,6 @@ const invalidItemQuantity = (button) => {
  * @return {number} entry.quantity display in quantity input
  */
 const setQuantityToLocalStorageValue = (button) => {
-  console.log(button);
   button.value = button.getAttribute("value");
   return;
 };

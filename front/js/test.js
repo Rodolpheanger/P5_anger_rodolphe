@@ -66,7 +66,6 @@
 //            </article>
 //          </a>
 //        `;
-//     console.log(item);
 //   }
 // };
 // createAllItems();

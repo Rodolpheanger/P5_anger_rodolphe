@@ -158,7 +158,6 @@ const checkValidity = (itemColor, itemName, itemQuantity) => {
  */
 const getLocalStorage = () => {
   let localStorageData = JSON.parse(window.localStorage.getItem("cart"));
-  console.log(localStorageData);
   if (localStorageData == null) {
     return (localStorageData = []);
   } else {
