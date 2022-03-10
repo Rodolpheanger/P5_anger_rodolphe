@@ -105,9 +105,7 @@ const addToCartInit = () => {
     const itemNameContainer = document.getElementById("title");
     const itemColorsContainer = document.getElementById("colors");
     const itemQuantityContainer = document.getElementById("quantity");
-    const itemQuantityContainerValue = Number.parseInt(
-      itemQuantityContainer.value
-    );
+    const itemQuantityContainerValue = Number(itemQuantityContainer.value);
     checkValidity(
       itemColorsContainer.value,
       itemNameContainer.textContent,

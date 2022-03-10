@@ -348,7 +348,7 @@ const itemsDisplay = async (localStorageData) => {
  * @returns {array} contain all the items individual quantity
  */
 const pushInEmptyItemQuantityArray = (itemQuantityArray, itemDataQuantity) => {
-  const itemDataQuantityToNumber = Number.parseInt(itemDataQuantity);
+  const itemDataQuantityToNumber = Number(itemDataQuantity);
   itemQuantityArray.push(itemDataQuantityToNumber);
   return itemQuantityArray;
 };
@@ -493,7 +493,7 @@ const modifyItemQuantity = (button, localStorageData, itemId, itemColor) => {
 const setNewItemQuantity = (localStorageData, itemId, itemColor, button) => {
   for (const entry of localStorageData) {
     if (entry.id === itemId && entry.color === itemColor && button.value > 0) {
-      entry.quantity = Number.parseInt(button.value);
+      entry.quantity = Number(button.value);
       setLocalStorage(localStorageData);
       button.setAttribute("value", entry.quantity);
       totalItemsQuantityDisplay(localStorageData);
