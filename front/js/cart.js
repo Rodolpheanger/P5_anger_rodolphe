@@ -507,7 +507,7 @@ const setNewItemQuantity = (localStorageData, itemId, itemColor, button) => {
  * @param {object} localStorageData
  */
 const invalidItemQuantity = (button) => {
-  if (button.value == 0) {
+  if (button.value <= 0) {
     alert(
       'La quantité minimum autorisée est de 1. Si vous souhaitez supprimer cet article, merci de cliquer sur "Supprimer"'
     );
